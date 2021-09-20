@@ -1,0 +1,157 @@
+---
+title: "proyecto_mineria_steam"
+output:
+  html_document: 
+    number_sections: yes
+    theme: spacelab
+    toc: yes
+    df_print: default
+  pdf_document:
+    toc: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r, eval=F, message=F}
+install.packages("reshape")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("tm")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("reshape", 
+        "tidyverse",
+        "ggplot2")
+library(tm)
+```
+
+## Carga de archivos csv y revisión preliminar de los datasets
+```{r setup, include=FALSE}
+steam <- read.csv("steam.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r setup, include=FALSE}
+str(steam)  # revisar información de las columnas
+```
+
+```{r setup, include=FALSE}
+summary(steam)  # revisar información de las columnas
+```
+
+```{r}
+dim(steam)  # dimensión del dataset
+```
+
+```{r}
+sapply(steam, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+```
+
+```{r setup, include=FALSE}
+steam_support_info <- read.csv("steam_support_info.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r setup, include=FALSE}
+str(steam_support_info)  # revisar información de las columnas
+```
+
+```{r setup, include=FALSE}
+summary(steam_support_info)  # revisar información de las columnas
+```
+
+```{r}
+dim(steam_support_info)  # dimensión del dataset
+```
+
+```{r}
+sapply(steam_support_info, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+```
+
+```{r setup, include=FALSE}
+steamspy_tag_data <- read.csv("steamspy_tag_data.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r setup, include=FALSE}
+str(steamspy_tag_data)  # revisar información de las columnas
+```
+
+```{r setup, include=FALSE}
+summary(steamspy_tag_data)  # revisar información de las columnas
+```
+
+```{r}
+dim(steamspy_tag_data)  # dimensión del dataset
+```
+
+```{r}
+sapply(steamspy_tag_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+```
+
+```{r setup, include=FALSE}
+# ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
+steam_description_data <- read.csv("steam_description_data.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r setup, include=FALSE}
+str(steam_description_data)  # revisar información de las columnas
+```
+
+```{r setup, include=FALSE}
+summary(steam_description_data)  # revisar información de las columnas
+```
+
+```{r}
+dim(steam_description_data)  # dimensión del dataset
+```
+
+```{r}
+sapply(steam_description_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+```
+
+```{r setup, include=FALSE}
+# ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
+steam_media_data <- read.csv("steam_media_data.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r setup, include=FALSE}
+str(steam_media_data)  # revisar información de las columnas
+```
+
+```{r setup, include=FALSE}
+summary(steam_media_data)  # revisar información de las columnas
+```
+
+```{r}
+dim(steam_media_data)  # dimensión del dataset
+```
+
+```{r}
+sapply(steam_media_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+```
+
+```{r setup, include=FALSE}
+# ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
+steam_requirements_data <- read.csv("steam_requirements_data.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r setup, include=FALSE}
+str(steam_requirements_data)  # revisar información de las columnas
+```
+
+```{r setup, include=FALSE}
+summary(steam_requirements_data)  # revisar información de las columnas
+```
+
+```{r}
+dim(steam_requirements_data)  # dimensión del dataset
+```
+
+```{r}
+sapply(steam_requirements_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+```
+
+
+
+
+
