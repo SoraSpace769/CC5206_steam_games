@@ -1,0 +1,182 @@
+---
+title: "Estudiando datos de Steam"
+output:
+  html_document: 
+    number_sections: yes
+    theme: spacelab
+    toc: yes
+    df_print: default
+  pdf_document:
+    toc: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r, eval=F, message=F}
+install.packages("reshape")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("tm")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("reshape", 
+        "tidyverse",
+        "ggplot2")
+library(tm)
+```
+
+
+# Importar csv
+
+https://www.kaggle.com/nikdavis/steam-store-games
+
+```{r}
+steam <- read.csv("data/steam.csv", sep=",", quote="\"", encoding="UTF-8")
+steam_cat <- read.csv("data/steam_categories.csv", encoding = "UTF-8")
+steam_gen <- read.csv("data/steam_genres.csv", encoding = "UTF-8")
+steam_plat <- read.csv("data/steam_platforms.csv", encoding = "UTF-8")
+```
+
+Elegir columnas a usar (se eliminan las que se encuentran en otras tablas)
+
+```{r}
+removed_cols <- c('platforms', 'genres', 'categories')
+steam <- steam[,!(names(steam) %in% removed_cols)]
+```
+
+# Pre-procesamiento
+
+## Formato
+
+Formato fechas:
+```{r}
+steam$release_date <- as.Date(steam$release_date)
+# (Agregar año como columna aparte)
+steam$release_year <- as.factor(format(steam$release_date, "%Y"))
+```
+
+Factores:
+```{r}
+steam$developer <- as.factor(steam$developer)
+steam$publisher <- as.factor(steam$publisher)
+steam$required_age <- as.factor(steam$required_age)
+steam$owners <- as.factor(steam$owners)
+```
+
+Resultado de los tipos:
+
+```{r}
+str(steam)
+```
+
+
+# Exploración
+
+## N° ratings como porcentajes
+
+```{r}
+steam_ratings <- steam[c("appid", "positive_ratings", "negative_ratings")]
+steam_ratings$total_ratings <- steam$positive_ratings + steam$negative_ratings
+steam_ratings$pp_ratings <- steam_ratings$positive_ratings/steam_ratings$total_ratings
+steam_ratings$np_ratings <- steam_ratings$negative_ratings/steam_ratings$total_ratings
+```
+
+## Desarrolladores
+
+Obtener developers únicos y la frecuencia con la que aparecen:
+
+```{r}
+freq_dev <- as.data.frame(table(steam$developer))
+names(freq_dev) <- c("developer", "freq")
+freq_dev <- freq_dev %>% arrange(-freq)
+```
+
+## Plataformas
+
+Tabla de frecuencia de cada plataforma:
+
+```{r}
+freq_plat <- as.data.frame(colSums(steam_plat[2:4]))
+names(freq_plat) <- "freq"
+freq_plat <- rownames_to_column(freq_plat, "platforms") %>% arrange(-freq)
+freq_plat
+```
+
+Cantidad de juegos que solo están en una plataforma:
+
+- Windows:
+```{r}
+steam_plat[2:4] %>% filter(windows==1 & linux==0 & mac==0) %>% nrow()
+```
+- Linux:
+```{r}
+steam_plat[2:4] %>% filter(windows==0 & linux==1 & mac==0) %>% nrow()
+```
+- Mac: 
+```{r}
+steam_plat[2:4] %>% filter(windows==0 & linux==0 & mac==1) %>% nrow()
+```
+
+## Categorías
+
+Tabla de frecuencia de cada categoría:
+
+```{r}
+freq_cat <- as.data.frame(colSums(steam_cat[2:30]))
+names(freq_cat) <- "freq"
+freq_cat <- rownames_to_column(freq_cat, "categories") %>% arrange(-freq)
+head(freq_cat)
+```
+
+Hay un par de categorías muy inusuales que quizás no vale la pena considerar:
+
+```{r}
+freq_cat %>% filter(freq < 10)
+```
+
+
+## Géneros
+
+Tabla de frecuencia de cada género:
+
+```{r}
+freq_gen <- as.data.frame(colSums(steam_gen[2:30]))
+names(freq_gen) <- "freq"
+freq_gen <- rownames_to_column(freq_gen, "genres") %>% arrange(-freq)
+head(freq_gen)
+```
+
+Hay algunos géneros que solo aparecen una vez:
+
+```{r}
+freq_gen %>% filter(freq == 1) %>% select(genres)
+```
+
+
+# Gráficos
+
+## Numéricos
+
+### Achievements
+
+```{r}
+ggplot(steam[steam$achievements<45,], aes(x = achievements)) +
+  geom_histogram(binwidth = 3)
+```
+
+## Nominales
+
+### Owners
+
+```{r}
+ggplot(steam[steam$price!=0,]) +
+  geom_bar(mapping= aes(x= owners)) +
+  coord_flip()
+```
+
+```{r}
+most_owned <- steam[steam$price!=0 & steam$owners!='0-20000',]
+```
+
