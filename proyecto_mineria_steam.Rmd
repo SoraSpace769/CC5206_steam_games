@@ -21,11 +21,14 @@ install.packages("tm")
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library("reshape", 
-        "tidyverse",
-        "ggplot2")
-library(tm)
 ```
+
+```{r, message = F}
+library(reshape) 
+library(tidyverse)
+library(ggplot2)
+```
+
 
 ## Carga de archivos csv y revisión preliminar de los datasets
 ```{r setup, include=FALSE}
@@ -48,110 +51,47 @@ dim(steam)  # dimensión del dataset
 sapply(steam, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
 ```
 
-```{r setup, include=FALSE}
-steam_support_info <- read.csv("steam_support_info.csv", encoding = "UTF-8", as.is = F)
-```
-
-```{r setup, include=FALSE}
-str(steam_support_info)  # revisar información de las columnas
-```
-
-```{r setup, include=FALSE}
-summary(steam_support_info)  # revisar información de las columnas
+```{r}
+names(steam)  # nombres de columnas del dataset
 ```
 
 ```{r}
-dim(steam_support_info)  # dimensión del dataset
+glimpse(steam)
+```
+
+## ¿Cómo ha evolucionado la cantidad de juegos que lanzan los desarrolladores en el tiempo?
+El estudio busca estudiar cómo ha cambiado (globalmente) la cantidad de juegos que se han lanzado anualmente durante toda la ventana de tiempo que cubren los datos.
+
+### Extracción de columnas relevantes para el análisis
+```{r}
+games_devs <- steam[, c("name", "release_date", "developer")]
+```
+
+### Generar columna solo con año de lanzamiento
+```{r}
+games_devs$release_date <- as.Date(steam$release_date)
+games_devs$release_year <- as.factor(format(games_devs$release_date, "%Y"))
+glimpse(games_devs)
+```
+### Agrupar por años y generar gráficos
+```{r}
+freq_years <- as.data.frame(table(games_devs$release_year))
+names(freq_years) <- c("release_year", "games_released")
+order(freq_years[, "release_year"])
+glimpse(freq_years)
 ```
 
 ```{r}
-sapply(steam_support_info, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
+ggplot(freq_years) +   # asociamos un data frame a ggplot
+  geom_bar(aes(x = release_year, y = games_released), stat="identity") +
+  ggtitle("Lanzamientos anuales de Videojuegos según la Tienda de Steam") + # título
+  xlab("Año de lanzamiento") + ylab("Cantidad de juegos lanzados")  # etiquetas
 ```
-
-```{r setup, include=FALSE}
-steamspy_tag_data <- read.csv("steamspy_tag_data.csv", encoding = "UTF-8", as.is = F)
-```
-
-```{r setup, include=FALSE}
-str(steamspy_tag_data)  # revisar información de las columnas
-```
-
-```{r setup, include=FALSE}
-summary(steamspy_tag_data)  # revisar información de las columnas
-```
+2do gráfico: Se modificó el eje X pues la cantidad de juegos lanzados en ese.
 
 ```{r}
-dim(steamspy_tag_data)  # dimensión del dataset
+ggplot(freq_years[freq_years$games_released >= 10, ]) +   # asociamos un data frame a ggplot
+  geom_bar(aes(x = release_year, y = games_released), stat="identity") +
+  ggtitle("Lanzamientos anuales de Videojuegos según la Tienda de Steam") + # título
+  xlab("Año de lanzamiento") + ylab("Cantidad de juegos lanzados")  # etiquetas
 ```
-
-```{r}
-sapply(steamspy_tag_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
-```
-
-```{r setup, include=FALSE}
-# ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
-steam_description_data <- read.csv("steam_description_data.csv", encoding = "UTF-8", as.is = F)
-```
-
-```{r setup, include=FALSE}
-str(steam_description_data)  # revisar información de las columnas
-```
-
-```{r setup, include=FALSE}
-summary(steam_description_data)  # revisar información de las columnas
-```
-
-```{r}
-dim(steam_description_data)  # dimensión del dataset
-```
-
-```{r}
-sapply(steam_description_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
-```
-
-```{r setup, include=FALSE}
-# ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
-steam_media_data <- read.csv("steam_media_data.csv", encoding = "UTF-8", as.is = F)
-```
-
-```{r setup, include=FALSE}
-str(steam_media_data)  # revisar información de las columnas
-```
-
-```{r setup, include=FALSE}
-summary(steam_media_data)  # revisar información de las columnas
-```
-
-```{r}
-dim(steam_media_data)  # dimensión del dataset
-```
-
-```{r}
-sapply(steam_media_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
-```
-
-```{r setup, include=FALSE}
-# ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
-steam_requirements_data <- read.csv("steam_requirements_data.csv", encoding = "UTF-8", as.is = F)
-```
-
-```{r setup, include=FALSE}
-str(steam_requirements_data)  # revisar información de las columnas
-```
-
-```{r setup, include=FALSE}
-summary(steam_requirements_data)  # revisar información de las columnas
-```
-
-```{r}
-dim(steam_requirements_data)  # dimensión del dataset
-```
-
-```{r}
-sapply(steam_requirements_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
-```
-
-
-
-
-
