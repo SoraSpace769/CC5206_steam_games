@@ -65,6 +65,12 @@ steam$required_age <- as.factor(steam$required_age)
 steam$owners <- as.factor(steam$owners)
 ```
 
+Precios en dólares:
+```{r}
+steam$price_usd <- round(steam$price * 1.37, digits=2)
+```
+
+
 Resultado de los tipos:
 
 ```{r}
@@ -74,16 +80,65 @@ str(steam)
 
 # Exploración
 
-## N° ratings como porcentajes
+## Numéricos
+
+```{r}
+steam %>% select(where(is.numeric)) %>% summary()
+```
+
+- Se observó que el atributo `english` no resultará muy útil pues casi todos los juegos están en inglés (lo que es esperable al ser Steam una plataforma originalmente en este idioma).
+- La mayoría de los juegos tiene una cantidad baja de `achievements`, aunque existen algunos que parecieran enfocarse en lo contrario y presentan un número absurdamente alto de logros.
+- Existe una clara tendencia a publicar opiniones positivas por sobre las negativas; en ambos casos habrá que tomar en cuenta una escala de `positive_ratings` y `negative_ratings` en caso de comparar juegos entre sí, pues sino los juegos "más populares" posiblemente terminarían opacando a los demás.
+- Resulta interesante observar que la mitad de los juegos agregados a las bibliotecas de los usuarios no son jugados: tanto `average_playtime` como `median_playtime` tienen mediana cero.
+- La mayor parte de los juegos tienen bajos precios (75% bajo 10 USD).
+
+### Achievements
+
+Una enorme cantidad de juegos no tiene logros: cerca de la mitad (43%).
+
+```{r}
+# Juegos sin achievements:
+steam %>% filter(achievements==0) %>% nrow()
+# Juegos con 1 o más achievements:
+steam %>% filter(achievements!=0) %>% nrow()
+```
+Para estudiar un poco más la distribución de la cantidad de logros se descartaron los casos donde no habían. En general parecen centrarse alrededor de 20 logros. Se observa una pequeña tendencia de juegos con más logros a llegar a un número cerrado (50), pero fuera de esta anomalía lo esperable es que una mayor cantidad de logros se vuelve cada vez más inusual.
+
+```{r}
+ggplot(steam[steam$achievements<100 & steam$achievements>0,], aes(x = achievements)) +
+  geom_density()
+```
+
+
+### Ratings
+
+Se calculó el n° de ratings de cada tipo como porcentajes, almacenándolo en el dataframe `steam_ratings`.
 
 ```{r}
 steam_ratings <- steam[c("appid", "positive_ratings", "negative_ratings")]
 steam_ratings$total_ratings <- steam$positive_ratings + steam$negative_ratings
 steam_ratings$pp_ratings <- steam_ratings$positive_ratings/steam_ratings$total_ratings
 steam_ratings$np_ratings <- steam_ratings$negative_ratings/steam_ratings$total_ratings
+summary(steam_ratings[c("positive_ratings", "negative_ratings")])
 ```
+### Playtimes
 
-## Desarrolladores
+[Pendiente! Es importante para estudiar los "mejores juegos"]
+
+### Precio
+
+[Pendiente]
+
+
+## Categóricos
+
+### Developers
+
+Existen muchísimos desarrolladores en Steam.
+
+```{r}
+length(levels(steam$developer))
+```
 
 Obtener developers únicos y la frecuencia con la que aparecen:
 
@@ -93,7 +148,20 @@ names(freq_dev) <- c("developer", "freq")
 freq_dev <- freq_dev %>% arrange(-freq)
 ```
 
-## Plataformas
+Por ejemplo, los desarrolladores con más juegos son:
+```{r}
+head(freq_dev,20)
+```
+
+### Publishers
+
+También son demasiados como para estudiarlos.
+
+```{r}
+length(levels(steam$publisher))
+```
+
+### Plataformas
 
 Tabla de frecuencia de cada plataforma:
 
@@ -103,6 +171,7 @@ names(freq_plat) <- "freq"
 freq_plat <- rownames_to_column(freq_plat, "platforms") %>% arrange(-freq)
 freq_plat
 ```
+Solo hay 3 plataformas en PC.
 
 Cantidad de juegos que solo están en una plataforma:
 
@@ -118,8 +187,31 @@ steam_plat[2:4] %>% filter(windows==0 & linux==1 & mac==0) %>% nrow()
 ```{r}
 steam_plat[2:4] %>% filter(windows==0 & linux==0 & mac==1) %>% nrow()
 ```
+Lo común es que los desarrolladores liberen sus juegos en Windows, y en ocasiones también agregar otras plataformas.
 
-## Categorías
+### Edad requerida
+
+Existen un total de 6 categorías según el sistema de rating inglés.
+
+```{r}
+levels(steam$required_age)
+```
+La mayor parte de los juegos no indican un rating:
+
+```{r}
+steam %>% count(required_age)
+```
+
+Sin embargo, esto puede deberse a que solo es importante etiquetarlos cuando se trata de juegos para mayores de edad, y que por eso la tendencia sea a aumentar la cantidad con el rating.
+
+
+### Categorías
+
+Existen 29 categorías únicas para los juegos:
+
+```{r}
+names(steam_cat)[-1]
+```
 
 Tabla de frecuencia de cada categoría:
 
@@ -137,7 +229,13 @@ freq_cat %>% filter(freq < 10)
 ```
 
 
-## Géneros
+### Géneros
+
+También se identificaron un total de 29 géneros distintos:
+
+```{r}
+names(steam_gen)[-1]
+```
 
 Tabla de frecuencia de cada género:
 
@@ -154,29 +252,22 @@ Hay algunos géneros que solo aparecen una vez:
 freq_gen %>% filter(freq == 1) %>% select(genres)
 ```
 
+[Idea: escoger solo algunos géneros!
+Si se conserva solo el top 16, solo hay un total de ~200 juegos que calzan con los otros 13 géneros, que ni siquiera se ven tan asociados a videojuegos sino más bien a otros programas...]
 
-# Gráficos
-
-## Numéricos
-
-### Achievements
-
-```{r}
-ggplot(steam[steam$achievements<45,], aes(x = achievements)) +
-  geom_histogram(binwidth = 3)
-```
-
-## Nominales
 
 ### Owners
 
-```{r}
-ggplot(steam[steam$price!=0,]) +
-  geom_bar(mapping= aes(x= owners)) +
-  coord_flip()
-```
+La cantidad aproximada de dueños de cada juego. Como podría esperarse, entre más 
 
 ```{r}
-most_owned <- steam[steam$price!=0 & steam$owners!='0-20000',]
+owners_order <- c("0-20000", "20000-50000", "50000-100000", "100000-200000", "200000-500000", "500000-1000000", "1000000-2000000", "2000000-5000000", "5000000-10000000", "10000000-20000000", "20000000-50000000", "50000000-100000000", "100000000-200000000")
+ggplot(steam[steam$price!=0,]) +
+  scale_y_log10() +
+  geom_bar(mapping= aes(x= owners)) +
+  scale_x_discrete(limits=owners_order) +
+  ylab("log10(cantidad)") +
+  xlab("rangos de cantidad de dueños") +
+  coord_flip()
 ```
 
