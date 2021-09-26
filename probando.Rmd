@@ -121,9 +121,34 @@ steam_ratings$pp_ratings <- steam_ratings$positive_ratings/steam_ratings$total_r
 steam_ratings$np_ratings <- steam_ratings$negative_ratings/steam_ratings$total_ratings
 summary(steam_ratings[c("positive_ratings", "negative_ratings")])
 ```
+
 ### Playtimes
 
 [Pendiente! Es importante para estudiar los "mejores juegos"]
+
+```{r}
+#plot(x=steam$average_playtime, y=steam$median_playtime)
+ggplot(steam[steam$average_playtime!=0,], aes(x = average_playtime)) +
+  geom_histogram(bins=20) +
+  xlim(c(1,1000))
+```
+
+```{r}
+top50_ratings <- merge(steam, steam_ratings[c(1,4:6)], "appid") %>% arrange(-total_ratings) %>% head(50)
+top50_ratgen <- merge(top50_ratings, steam_gen, "appid")
+top50_ratgen[21:49] <- lapply(top50_ratgen[21:49],factor)
+```
+
+```{r}
+pairs(top50_ratgen[,9:20], col=as.numeric(top50_ratgen$Adventure))
+#legend('topright', c("Action", "Not Action"), col=0:1)
+```
+
+
+```{r}
+top50_ratings %>% select(where(is.numeric)) %>% cor()
+```
+
 
 ### Precio
 
@@ -131,6 +156,10 @@ summary(steam_ratings[c("positive_ratings", "negative_ratings")])
 
 
 ## Categóricos
+
+### Fecha de Lanzamiento
+
+[Ya lo estudió el Lucho]
 
 ### Developers
 
@@ -244,6 +273,13 @@ freq_gen <- as.data.frame(colSums(steam_gen[2:30]))
 names(freq_gen) <- "freq"
 freq_gen <- rownames_to_column(freq_gen, "genres") %>% arrange(-freq)
 head(freq_gen)
+```
+
+```{r}
+ggplot(freq_gen, aes(x=reorder(genres, freq), y=freq)) +
+  geom_bar(stat="identity") +
+  ylab("Géneros")
+  coord_flip()
 ```
 
 Hay algunos géneros que solo aparecen una vez:

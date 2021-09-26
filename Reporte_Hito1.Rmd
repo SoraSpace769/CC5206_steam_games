@@ -14,11 +14,21 @@ editor_options:
 
 # Introducción
 
-* Planteamiento del problema
+## Contexto/Motivación
 
-* Motivación
+El mercado de los videojuegos, un área de interés común para los integrantes del grupo, ha crecido muchísimo en los últimos años. Esto se aprecia tanto al observar la cantidad de personas aficionadas a este hobby, la variedad de juegos publicados cada año, y los avances en gráficos y otras tecnologías que se ha logrado con el tiempo.
+
+Resulta interesante además porque plataformas como Steam e Itch.io permiten que desarrolladores independientes o grupos pequeños de éstos puedan ser visibilizados y publicar sus juegos sin necesitar de grandes inversiones, volviendo alcanzanble ingresar y/o dedicarse al área.
+
+## Datos de estudio
 
 El dataset escogido para el proyecto corresponde a información respecto a videojuegos recopilada de la plataforma Steam. Fue obtenido originalmente de [Kaggle](https://www.kaggle.com/nikdavis/steam-store-games).
+
+## Planteamiento del problema
+
+Por un lado, considerando que se ha presenciado en persona la evolución de los videojuegos, resulta atractiva la idea de encontrar (más allá de la impresión personal que se pueda tener) evidencia tangible de tendencias que se han dado respecto a los juegos con el paso de los años.
+
+Observando lo vigente que resulta el área, y aprovechando la oportunidad del proyecto de este curso,  se aspirará también a identificar patrones que puedan resultar provechosos al momento de elegir ciertas características que tendrá un juego, tal que incluirlos pueda significar un mayor interés por parte del público.
 
 
 # Exploración de datos
