@@ -1,13 +1,13 @@
 ---
-title: "Reporte_Hito1"
+title: "Reporte Hito 1"
 output:
+  pdf_document:
+    toc: yes
   html_document: 
     number_sections: yes
     theme: spacelab
     toc: yes
     df_print: default
-  pdf_document:
-    toc: yes
 editor_options: 
   chunk_output_type: inline
 ---
