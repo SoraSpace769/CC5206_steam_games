@@ -1,13 +1,13 @@
 ---
 title: "Reporte Hito 1"
 output:
-  pdf_document:
-    toc: yes
   html_document: 
     number_sections: yes
     theme: spacelab
     toc: yes
     df_print: default
+  pdf_document:
+    toc: yes
 editor_options: 
   chunk_output_type: inline
 ---
@@ -248,8 +248,9 @@ steam %>%
   group_by(year) %>%
   filter(year >=2006) %>%
   summarise(n = n()) %>%
-  ggplot(aes(x=year,y=n)) + geom_bar(stat = 'identity')
-
+  ggplot(aes(x=year,y=n)) + geom_bar(stat = 'identity') +
+  xlab("año") + 
+  ylab("cantidad")
 ```
 
 Como los datos fueron recolectados en 2019, es esperable que no se tenga información completa respecto al último año; fuera de este caso, la cantidad de juegos lanzados parece aumentar cada año.
@@ -267,7 +268,8 @@ steam %>%
   group_by(year, month) %>%
   summarise(n = n()) %>%
   ggplot(aes(x= as.factor(month), y=n)) + geom_bar(stat = 'identity') +
-  xlab("month")
+  xlab("mes") +
+  ylab("cantidad")
 ```
 
 
@@ -297,8 +299,11 @@ steam %>%
   select(windows,mac,linux) %>%
   summarise_all(sum) %>%
   melt() %>%
-  ggplot(aes(variable,value, label = value)) + geom_bar(stat = 'identity') +geom_text(vjust = 4, colour = "white")
-
+  ggplot(aes(variable,value, label = value)) + 
+  geom_bar(stat = 'identity') +
+  geom_text(vjust = 4, colour = "white") +
+  xlab("plataformas") +
+  ylab("cantidad")
 ```
 
 Solo hay 3 plataformas en PC, siendo liderado por Windows.
@@ -424,7 +429,7 @@ Algunos de los anteriores corresponden a géneros de software y no necesariament
 
 ### Cantidad de dueños
 
-Para distinguir de mejor forma los grupos se prefirió convertir el valor a numérico promediando ambos límites del rango entregado originalmente.
+Para distinguir de mejor forma los grupos se prefirió convertir el valor a numérico promediando ambos límites del rango entregado originalmente (`dueños promedio`).
 
 ```{r}
 owners <- str_split(steam$owners, "-")
@@ -447,7 +452,7 @@ steam %>%
   scale_y_log10() +
   geom_bar(aes(x=as.factor(duenos_promedio), y=n), stat="identity") +
   scale_x_discrete(labels=owners_lbl) +
-  ylab("log10(n)") +
+  ylab("cantidad") +
   xlab("rangos de cantidad de dueños") +
   coord_flip()
 ```
@@ -461,7 +466,8 @@ steam %>%
   filter(price < 50000 & duenos_promedio < 50000000 & duenos_promedio > 0) %>%
   ggplot(aes(x=price,y=log(duenos_promedio))) +
   geom_point(aes(alpha=0.05), show.legend = F) +
-  xlab("price (CLP)")
+  xlab("precio (CLP)") +
+  ylab("log(dueños promedio)")
 ```
 
 En general, los juegos tienden a tener precios bajos; conforme crecen tienden a agruparse en ciertos precios "estándar". Por otro lado, los juegos con más descargas son gratis, concentrándose hacia precios cada vez más pequeños conforme aumentan los rangos de dueños.
@@ -473,31 +479,28 @@ steam %>%
   filter(price<100000) %>%
   ggplot(aes(x=price,y=log(positive_ratings))) +
   geom_point() + 
-  xlab("price (CLP)")
+  xlab("precio (CLP)") +
+  ylab("log(ratings positivos)")
 ```
 
 ### Desarrolladores más elogiados
 
 ```{r}
-
 steam %>% 
   group_by(developer) %>%
   summarise(media_pos = mean(positive_ratings)) %>%
   arrange(-media_pos) %>%
   head(10)
-  
 ```
 
 ### Desarrolladores más criticados
 
 ```{r}
-
 steam %>% 
   group_by(developer) %>%
   summarise(media_neg = mean(negative_ratings)) %>%
   arrange(-media_neg) %>%
   head(10)
-  
 ```
 
 ### Géneros más caros
@@ -511,11 +514,9 @@ steam %>%
   summarise(media_precio_genero = mean(price)) %>%
   arrange(-media_precio_genero) %>%
   head(10)
-  
 ```
 
 ```{r}
-
 steam %>%
   select(c(1,84:112,14)) %>%
   melt(id = c("appid","price")) %>%
@@ -525,8 +526,9 @@ steam %>%
   arrange(-media_precio_genero) %>%
   head(10) %>%
   ggplot(aes(reorder(variable,-media_precio_genero),media_precio_genero)) +
-  geom_bar(stat = 'identity') +theme(axis.text.x = element_text(angle = 90))
-  
+  geom_bar(stat = 'identity') +theme(axis.text.x = element_text(angle = 90)) +
+  xlab("géneros") +
+  ylab("precio medio")
 ```
 
 ### Géneros más económicos
@@ -540,7 +542,6 @@ steam %>%
   summarise(media_precio_genero = mean(price)) %>%
   arrange(media_precio_genero) %>%
   head(10)
-  
 ```
 
 ```{r}
@@ -554,7 +555,9 @@ steam %>%
   arrange(media_precio_genero) %>%
   head(10) %>%
   ggplot(aes(reorder(variable,media_precio_genero),media_precio_genero)) +
-  geom_bar(stat = 'identity') +theme(axis.text.x = element_text(angle = 90))
+  geom_bar(stat = 'identity') +theme(axis.text.x = element_text(angle = 90)) +
+  xlab("géneros") +
+  ylab("precio medio")
   
 ```
 
@@ -618,8 +621,9 @@ steam %>%
   group_by(variable) %>%
   filter(value == 1 & price<=20000) %>%
   ggplot(aes(variable,price)) + 
-  geom_boxplot()
-
+  geom_boxplot() +
+  xlab("géneros") +
+  ylab("precio")
 ```
 
 ### Cantidad de juegos de un género por año
@@ -633,7 +637,8 @@ steam %>%
   filter(value == 1 & year >=2006) %>%
   group_by(variable, year) %>%
   summarise(q_juegos = n()) %>%
-  plot_ly(x=~year ,y = ~q_juegos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers')
+  plot_ly(x=~year ,y = ~q_juegos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers') %>%
+  layout(xaxis=list(title="año"), yaxis=list(title="cantidad"))
 ```
 
 ### Precios de géneros de juego por año
@@ -645,7 +650,8 @@ steam %>%
   filter(value == 1 & year >=2006) %>%
   group_by(variable, year) %>%
   summarise(media_duenos = mean(duenos_promedio)) %>%
-  plot_ly(x=~year ,y = ~media_duenos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers') %>% layout(xaxis = list(range=c(2006,2020)))
+  plot_ly(x=~year ,y = ~media_duenos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers') %>% layout(xaxis = list(range=c(2006,2020))) %>%
+  layout(xaxis=list(title="año"), yaxis=list(title="cantidad de dueños media"))
 ```
 
 ### Variación de dueños promedio por año de lanzamiento
@@ -657,7 +663,8 @@ steam %>%
   filter(value == 1 & year >=2007) %>%
   group_by(variable, year) %>%
   summarise(media_duenos = mean(duenos_promedio)) %>%
-  plot_ly(x=~year ,y = ~media_duenos,group = ~variable, color = ~variable ,type = "scatter" ,mode='markers', frame = ~year, size = 10)
+  plot_ly(x=~year ,y = ~media_duenos,group = ~variable, color = ~variable ,type = "scatter" ,mode='markers', frame = ~year, size = 10) %>%
+  layout(xaxis=list(title="año"), yaxis=list(title="cantidad de dueños media"))
 ```
 
 
