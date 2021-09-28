@@ -1,0 +1,353 @@
+---
+title: "Estudiando datos de Steam"
+output:
+  html_document: 
+    number_sections: yes
+    theme: spacelab
+    toc: yes
+    df_print: default
+  pdf_document:
+    toc: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r, eval=F, message=F}
+install.packages("reshape")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("tm")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("reshape", 
+        "tidyverse",
+        "ggplot2")
+library(tm)
+```
+
+
+# Importar csv
+
+https://www.kaggle.com/nikdavis/steam-store-games
+
+```{r}
+steam_og <- read.csv("data/steam.csv", sep=",", quote="\"", encoding="UTF-8")
+steam_cat <- read.csv("data/steam_categories.csv", encoding = "UTF-8")
+steam_gen <- read.csv("data/steam_genres.csv", encoding = "UTF-8")
+steam_plat <- read.csv("data/steam_platforms.csv", encoding = "UTF-8")
+```
+
+Elegir columnas a usar (se eliminan las que se encuentran en otras tablas)
+
+```{r}
+removed_cols <- c('platforms', 'genres', 'categories')
+steam <- steam[,!(names(steam) %in% removed_cols)]
+```
+
+# Pre-procesamiento
+
+## Formato
+
+Formato fechas:
+```{r}
+steam$release_date <- as.Date(steam$release_date)
+# (Agregar año como columna aparte)
+steam$release_year <- as.factor(format(steam$release_date, "%Y"))
+```
+
+Factores:
+```{r}
+steam$developer <- as.factor(steam$developer)
+steam$publisher <- as.factor(steam$publisher)
+steam$required_age <- as.factor(steam$required_age)
+steam$owners <- as.factor(steam$owners)
+```
+
+Precios en dólares:
+```{r}
+steam$price_usd <- round(steam$price * 1.37, digits=2)
+```
+
+
+Resultado de los tipos:
+
+```{r}
+str(steam)
+```
+
+
+# Exploración
+
+## Numéricos
+
+```{r}
+steam %>% select(where(is.numeric)) %>% summary()
+```
+
+- Se observó que el atributo `english` no resultará muy útil pues casi todos los juegos están en inglés (lo que es esperable al ser Steam una plataforma originalmente en este idioma).
+- La mayoría de los juegos tiene una cantidad baja de `achievements`, aunque existen algunos que parecieran enfocarse en lo contrario y presentan un número absurdamente alto de logros.
+- Existe una clara tendencia a publicar opiniones positivas por sobre las negativas; en ambos casos habrá que tomar en cuenta una escala de `positive_ratings` y `negative_ratings` en caso de comparar juegos entre sí, pues sino los juegos "más populares" posiblemente terminarían opacando a los demás.
+- Resulta interesante observar que la mitad de los juegos agregados a las bibliotecas de los usuarios no son jugados: tanto `average_playtime` como `median_playtime` tienen mediana cero.
+- La mayor parte de los juegos tienen bajos precios (75% bajo 10 USD).
+
+### Achievements
+
+Una enorme cantidad de juegos no tiene logros: un 43% del total.
+
+```{r}
+# Juegos sin achievements:
+steam %>% filter(achievements==0) %>% nrow()
+# Juegos con 1 o más achievements:
+steam %>% filter(achievements!=0) %>% nrow()
+```
+Para estudiar un poco más la distribución de la cantidad de logros se descartaron los casos donde no habían. En general parecen centrarse alrededor de 20 logros. Se observa una pequeña tendencia de juegos con más logros a llegar a un número cerrado (50), pero fuera de esta anomalía lo esperable es que una mayor cantidad de logros se vuelve cada vez más inusual.
+
+```{r}
+ggplot(steam[steam$achievements<100 & steam$achievements>0,], aes(x = achievements)) +
+  geom_density()
+```
+
+
+### Ratings
+
+Se calculó el n° de ratings de cada tipo como porcentajes, almacenándolo en el dataframe `steam_ratings`.
+
+```{r}
+steam_ratings <- steam_og[c("appid", "name", "positive_ratings", "negative_ratings")]
+steam_ratings$total_ratings <- steam$positive_ratings + steam$negative_ratings
+steam_ratings$pp_ratings <- steam_ratings$positive_ratings/steam_ratings$total_ratings
+steam_ratings$np_ratings <- steam_ratings$negative_ratings/steam_ratings$total_ratings
+summary(steam_ratings[c("positive_ratings", "negative_ratings", 'pp_ratings', 'np_ratings')])
+```
+```{r}
+ggplot(steam_ratings, aes(x = pp_ratings)) +
+  geom_density()
+```
+
+```{r}
+steam_ratings %>% 
+  filter(total_ratings>50) %>%
+  select(name,pp_ratings) %>%
+  arrange(-pp_ratings) %>%
+  head(10)
+```
+
+```{r}
+steam %>%
+  filter(achievements>0 & achievements<50 & price<10000) %>%
+  summarise(price, achievements, positive_rate=positive_ratings/(positive_ratings+negative_ratings)) %>%
+  ggplot() +
+  geom_point(aes(x=achievements, y=price, color=positive_rate)) +
+  scale_color_gradient(low="red",high="blue")
+```
+
+
+### Playtimes
+
+[Pendiente! Es importante para estudiar los "mejores juegos"]
+
+```{r}
+#plot(x=steam$average_playtime, y=steam$median_playtime)
+ggplot(steam[steam$average_playtime!=0,], aes(x = average_playtime)) +
+  geom_histogram(bins=20) +
+  xlim(c(1,1000))
+```
+
+```{r}
+top50_ratings <- merge(steam, steam_ratings[c(1,4:6)], "appid") %>% arrange(-total_ratings) %>% head(50)
+top50_ratgen <- merge(top50_ratings, steam_gen, "appid")
+top50_ratgen[21:49] <- lapply(top50_ratgen[21:49],factor)
+```
+
+```{r}
+pairs(top50_ratgen[,9:20], col=as.numeric(top50_ratgen$Adventure))
+#legend('topright', c("Action", "Not Action"), col=0:1)
+```
+
+
+```{r}
+top50_ratings %>% select(where(is.numeric)) %>% cor()
+```
+
+
+### Precio
+
+[Pendiente]
+
+
+## Categóricos
+
+### Fecha de Lanzamiento
+
+[Ya lo estudió el Lucho]
+
+### Developers
+
+Existen muchísimos desarrolladores en Steam.
+
+```{r}
+length(levels(steam$developer))
+```
+
+Obtener developers únicos y la frecuencia con la que aparecen:
+
+```{r}
+freq_dev <- as.data.frame(table(steam$developer))
+names(freq_dev) <- c("developer", "freq")
+freq_dev <- freq_dev %>% arrange(-freq)
+```
+
+Por ejemplo, los desarrolladores con más juegos son:
+```{r}
+head(freq_dev,20)
+```
+
+### Publishers
+
+También son demasiados como para estudiarlos.
+
+```{r}
+length(levels(steam$publisher))
+```
+
+### Plataformas
+
+Tabla de frecuencia de cada plataforma:
+
+```{r}
+freq_plat <- as.data.frame(colSums(steam_plat[2:4]))
+names(freq_plat) <- "freq"
+freq_plat <- rownames_to_column(freq_plat, "platforms") %>% arrange(-freq)
+freq_plat
+```
+Solo hay 3 plataformas en PC.
+
+Cantidad de juegos que solo están en una plataforma:
+
+- Windows:
+```{r}
+steam_plat[2:4] %>% filter(windows==1 & linux==0 & mac==0) %>% nrow()
+```
+- Linux:
+```{r}
+steam_plat[2:4] %>% filter(windows==0 & linux==1 & mac==0) %>% nrow()
+```
+- Mac: 
+```{r}
+steam_plat[2:4] %>% filter(windows==0 & linux==0 & mac==1) %>% nrow()
+```
+Lo común es que los desarrolladores liberen sus juegos en Windows, y en ocasiones también agregar otras plataformas.
+
+### Edad requerida
+
+Existen un total de 6 categorías según el sistema de rating inglés.
+
+```{r}
+unique(steam$required_age)
+```
+La mayor parte de los juegos no indican un rating:
+
+```{r}
+steam %>% count(required_age)
+```
+
+Sin embargo, esto puede deberse a que solo es importante etiquetarlos cuando se trata de juegos para mayores de edad, y que por eso la tendencia sea a aumentar la cantidad con el rating.
+
+
+### Categorías
+
+Existen 29 categorías únicas para los juegos:
+
+```{r}
+names(steam_cat)[-1]
+```
+
+Tabla de frecuencia de cada categoría:
+
+```{r}
+freq_cat <- as.data.frame(colSums(steam_cat[2:30]))
+names(freq_cat) <- "freq"
+freq_cat <- rownames_to_column(freq_cat, "categories") %>% arrange(-freq)
+head(freq_cat)
+```
+
+Hay un par de categorías muy inusuales que quizás no vale la pena considerar:
+
+```{r}
+freq_cat %>% filter(freq < 10)
+```
+
+
+### Géneros
+
+También se identificaron un total de 29 géneros distintos:
+
+```{r}
+names(steam_gen)[-1]
+```
+
+Tabla de frecuencia de cada género:
+
+```{r}
+freq_gen <- as.data.frame(colSums(steam_gen[2:30]))
+names(freq_gen) <- "freq"
+freq_gen <- rownames_to_column(freq_gen, "genres") %>% arrange(-freq)
+head(freq_gen)
+```
+
+```{r}
+ggplot(freq_gen, aes(x=reorder(genres, freq), y=freq)) +
+  geom_bar(stat="identity") +
+  ylab("Géneros")
+  coord_flip()
+```
+
+Hay algunos géneros que solo aparecen una vez:
+
+```{r}
+freq_gen %>% filter(freq == 1) %>% select(genres)
+```
+
+[Idea: escoger solo algunos géneros!
+Si se conserva solo el top 16, solo hay un total de ~200 juegos que calzan con los otros 13 géneros, que ni siquiera se ven tan asociados a videojuegos sino más bien a otros programas...]
+
+
+### Owners
+
+La cantidad aproximada de dueños de cada juego. Como podría esperarse, entre más 
+
+```{r}
+owners_order <- c("0-20000", "20000-50000", "50000-100000", "100000-200000", "200000-500000", "500000-1000000", "1000000-2000000", "2000000-5000000", "5000000-10000000", "10000000-20000000", "20000000-50000000", "50000000-100000000", "100000000-200000000")
+ggplot(steam[steam$price!=0,]) +
+  scale_y_log10() +
+  geom_bar(mapping= aes(x= owners)) +
+  scale_x_discrete(limits=owners_order) +
+  ylab("log10(cantidad)") +
+  xlab("rangos de cantidad de dueños") +
+  coord_flip()
+```
+
+
+```{r}
+steam %>%
+  filter(achievements<50) %>%
+  select(c(1,84:112,9)) %>%
+  melt(id = c("appid","achievements")) %>%
+  filter(value ==1) %>%
+  group_by(variable, achievements) %>%
+  ggplot(aes(x=variable, y=achievements)) + geom_jitter() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+```{r}
+steam %>%
+  filter(price<5000) %>%
+  select(1, popular_genres$variable, price, achievements) %>%
+  melt(id = c("appid","price","achievements")) %>%
+  filter(value ==1) %>%
+  group_by(variable, price) %>%
+  ggplot(aes(x=variable, y=price)) + geom_jitter() +
+  theme(axis.text.x = element_text(angle = 90))
+```

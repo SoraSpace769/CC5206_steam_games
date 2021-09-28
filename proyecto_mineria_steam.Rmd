@@ -28,8 +28,11 @@ library(tm)
 ```
 
 ## Carga de archivos csv y revisión preliminar de los datasets
+
+### steam.csv
+
 ```{r setup, include=FALSE}
-steam <- read.csv("steam.csv", encoding = "UTF-8", as.is = F)
+steam <- read.csv("data/steam.csv", encoding = "UTF-8", as.is=F)
 ```
 
 ```{r setup, include=FALSE}
@@ -47,6 +50,9 @@ dim(steam)  # dimensión del dataset
 ```{r}
 sapply(steam, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
 ```
+
+
+### steam_support_info.csv
 
 ```{r setup, include=FALSE}
 steam_support_info <- read.csv("steam_support_info.csv", encoding = "UTF-8", as.is = F)
@@ -68,6 +74,9 @@ dim(steam_support_info)  # dimensión del dataset
 sapply(steam_support_info, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
 ```
 
+
+### steamspy_tag_data.csv
+
 ```{r setup, include=FALSE}
 steamspy_tag_data <- read.csv("steamspy_tag_data.csv", encoding = "UTF-8", as.is = F)
 ```
@@ -87,6 +96,9 @@ dim(steamspy_tag_data)  # dimensión del dataset
 ```{r}
 sapply(steamspy_tag_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
 ```
+
+
+### steam_description_data.csv
 
 ```{r setup, include=FALSE}
 # ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
@@ -109,6 +121,9 @@ dim(steam_description_data)  # dimensión del dataset
 sapply(steam_description_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
 ```
 
+
+### steam_media_data.csv
+
 ```{r setup, include=FALSE}
 # ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
 steam_media_data <- read.csv("steam_media_data.csv", encoding = "UTF-8", as.is = F)
@@ -129,6 +144,9 @@ dim(steam_media_data)  # dimensión del dataset
 ```{r}
 sapply(steam_media_data, function(x) sum(is.na(x)))  # valores NaN presentes en el dataset
 ```
+
+
+### steam_requirements_data.csv
 
 ```{r setup, include=FALSE}
 # ADVERTENCIA: DATASET DE TAMAÑO GRANDE, CARGAR CON PRECAUCIÓN
@@ -152,6 +170,47 @@ sapply(steam_requirements_data, function(x) sum(is.na(x)))  # valores NaN presen
 ```
 
 
+### steam_categories.csv
+
+```{r setup, include=FALSE}
+steam_cat <- read.csv("data/steam_categories.csv", encoding = "UTF-8")
+```
+
+```{r}
+sapply(steam_cat, function(x) sum(x))
+```
+
+Tabla de correlación de categorías:
+```{r}
+cor_cat <- cor(steam_cat)
+```
 
 
+### steam_genres.csv
+
+```{r setup, include=FALSE}
+steam_gen <- read.csv("data/steam_genres.csv", encoding = "UTF-8")
+```
+
+```{r}
+sapply(steam_gen, function(x) sum(x))
+```
+
+Tabla de correlación de géneros:
+```{r}
+cor_gen <- cor(steam_gen)
+```
+
+
+Correlación entre categorías y géneros:
+```{r}
+cor_mix <- cor(steam_cat,steam_gen)
+```
+
+
+### steam_platforms.csv
+
+```{r setup, include=FALSE}
+steam_plat <- read.csv("data/steam_platforms.csv", encoding = "UTF-8")
+```
 
