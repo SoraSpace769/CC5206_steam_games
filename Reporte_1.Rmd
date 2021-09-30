@@ -12,6 +12,11 @@ editor_options:
   chunk_output_type: inline
 ---
 
+<style>
+body {
+text-align: justify}
+</style>
+
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
@@ -22,7 +27,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 El mercado de los videojuegos, un área de interés común para los integrantes del grupo, ha crecido muchísimo en los últimos años. Esto se aprecia tanto al observar la cantidad de personas aficionadas a este hobby, la variedad de juegos publicados cada año, y los avances en gráficos y otras tecnologías que se ha logrado con el tiempo.
 
-Resulta interesante además porque plataformas como Steam e Itch.io permiten que desarrolladores independientes o grupos pequeños de éstos puedan ser visibilizados y publicar sus juegos sin necesitar de grandes inversiones, volviendo alcanzanble ingresar y/o dedicarse al área.
+Resulta interesante además porque plataformas como Steam e Itch.io permiten que desarrolladores independientes o grupos pequeños de éstos puedan ser visibilizados y publicar sus juegos sin necesitar de grandes inversiones, volviendo alcanzable ingresar y/o dedicarse al área.
 
 ## Datos de estudio
 
@@ -67,7 +72,7 @@ Adicionalmente, existen otros atributos que de forma similar a las compañías d
 - **categories:** Características adicionales de los juegos, como soporte de tecnologías y cantidad de jugadores permitidos.
 - **genres:** Géneros con los que se clasificó el juego.
 
-El dataset original no contiene elementos vacíos (NaN).
+El dataset original no contiene elementos vacíos (NaN) y posee 27075 observaciones que corresponden a los juegos presentes en la plataforma steam.
 
 
 ## Preprocesamiento de la base de datos
@@ -131,8 +136,19 @@ steam %>%
 - Se observó que el atributo `english` no resultará muy útil pues casi todos los juegos están en inglés (lo que es esperable al ser Steam una plataforma originalmente en este idioma).
 - La mayoría de los juegos tiene una cantidad baja de `achievements`, aunque existen algunos que parecieran enfocarse en lo contrario y presentan un número absurdamente alto de logros.
 - Existe una clara tendencia a publicar opiniones positivas por sobre las negativas; en ambos casos habrá que tomar en cuenta una escala de `positive_ratings` y `negative_ratings` en caso de comparar juegos entre sí, pues sino los juegos "más populares" posiblemente terminarían opacando a los demás.
-- Resulta interesante observar que la mitad de los juegos agregados a las bibliotecas de los usuarios no son jugados: tanto `average_playtime` como `median_playtime` tienen mediana cero.
+- Resulta interesante observar más de la mitad de los juegos agregados a las bibliotecas de los usuarios no son jugados: tanto `average_playtime` como `median_playtime` tienen mediana cero.
 - La mayor parte de los juegos tienen bajos precios (75% bajo $8000 CLP).
+
+Dado que buena parte de los valores de las variables `average_playtime` y `median_playtime` están fuertemente concentrados en 0, a continución se muestran
+sus valores de tendencia central filtrando que sean mayor a cero (sólo para 
+objetivos de análisis).
+
+```{r}
+steam %>%
+  select(average_playtime,median_playtime) %>% 
+  filter(average_playtime>0 & median_playtime>0) %>%
+  summary()
+```
 
 ### Achievements
 
@@ -154,6 +170,8 @@ ggplot(steam[steam$achievements<100 & steam$achievements>0,], aes(x = achievemen
 
 ### Ratings
 
+A continuación, se muestran los tabulados correspondientes a los 10 juegos con mayor cantidad de `positive_ratings`, de `negative_ratings` y también de una variable auxiliar `rating_neto` que corresponde a la diferencia entre los `positive_ratings` y `negative_ratings`.
+
 ```{r}
 steam %>% 
   select(name,positive_ratings) %>%
@@ -166,8 +184,17 @@ steam %>%
   arrange(-negative_ratings) %>%
   head(10)
 ```
+```{r}
+steam %>% 
+  mutate(rating_neto = positive_ratings - negative_ratings) %>%
+  select(name,rating_neto) %>%
+  arrange(-rating_neto) %>%
+  head(10)
+```
 
 ### Tiempos de juego
+
+A continuación se muestran los 10 juegos con mayor `average_playtine` y `median_playtime`. Cabe mencionar que los resultados obtenidos abren muchas dudas de la fiabilidad y validez de estas variables ya que luego de realizar un análisis cualitativo de varios de estos juegos pudimos concluir que no es esperable que posean tantas horas de juegos. Dado lo anterior, hemos decidido continuar con cautela respecto a estas variables y seguir investigando si pudiesen contener errores o outliers muy extremos.
 
 ```{r}
 steam %>% 
@@ -182,15 +209,9 @@ steam %>%
   head(10)
 ```
 
-```{r}
-steam %>% 
-  mutate(rating_neto = positive_ratings - negative_ratings) %>%
-  select(name,rating_neto) %>%
-  arrange(-rating_neto) %>%
-  head(10)
-```
-
 ### Precio
+
+A continuación, se muestran los 10 juegos con mayor precio en steam y también se incluyen dos tablas de los 10 juegos gratis (precio = 0) con mayor cantidad de ratings positivos y negativos. 
 
 ```{r}
 steam %>% 
@@ -212,7 +233,7 @@ steam %>%
   arrange(-negative_ratings) %>%
   head(10)
 ```
-```{r}
+```{r , include=FALSE}
 steam %>% 
   filter(price == 0) %>%
   mutate(rating_neto = positive_ratings - negative_ratings) %>%
@@ -226,7 +247,7 @@ steam %>%
 
 ### Año de lanzamiento
 
-```{r}
+```{r , include=FALSE}
 if (!require('lubridate')) install.packages('lubridate'); library('lubridate')
 
 steam <- steam %>%
@@ -246,11 +267,11 @@ Vale la pena destacar que los datos consideran desde el año 1997 hasta 2019. Ha
 
 steam %>%
   group_by(year) %>%
-  filter(year >=2006) %>%
   summarise(n = n()) %>%
-  ggplot(aes(x=year,y=n)) + geom_bar(stat = 'identity') +
+  ggplot(aes(x=year,y=n, label=n)) + geom_bar(stat = 'identity') +
   xlab("año") + 
-  ylab("cantidad")
+  ylab("cantidad") +
+  geom_text(vjust = -0.5, colour = "black", size = 2.5) 
 ```
 
 Como los datos fueron recolectados en 2019, es esperable que no se tenga información completa respecto al último año; fuera de este caso, la cantidad de juegos lanzados parece aumentar cada año.
@@ -267,30 +288,14 @@ Bajo esta consideración, también puede resultar interesante ver cómo se distr
 steam %>%
   group_by(year, month) %>%
   summarise(n = n()) %>%
-  ggplot(aes(x= as.factor(month), y=n)) + geom_bar(stat = 'identity') +
+  ggplot(aes(x= as.factor(month), y=n, label=n)) + geom_bar(stat = 'identity') +
   xlab("mes") +
-  ylab("cantidad")
-```
-
-
-### Achievements
-
-Una enorme cantidad de juegos no tiene logros: un 43% del total.
-
-```{r}
-# Juegos sin achievements:
-steam %>% filter(achievements==0) %>% nrow()
-# Juegos con 1 o más achievements:
-steam %>% filter(achievements!=0) %>% nrow()
-```
-Para estudiar un poco más la distribución de la cantidad de logros se descartaron los casos donde no habían. En general parecen centrarse alrededor de 20 logros. Se observa una pequeña tendencia de juegos con más logros a llegar a un número cerrado (50), pero fuera de esta anomalía lo esperable es que una mayor cantidad de logros se vuelve cada vez más inusual.
-
-```{r}
-ggplot(steam[steam$achievements<100 & steam$achievements>0,], aes(x = achievements)) +
-  geom_density()
+  ylab("cantidad") 
 ```
 
 ### Plataformas
+
+En este apartado se puede ver la distribución de las plataformas a lo largo del dataframe steam.
 
 ```{r}
 if (!require('reshape')) install.packages('reshape'); library('reshape')
@@ -464,24 +469,28 @@ steam %>%
 ```{r}
 steam %>% 
   filter(price < 50000 & duenos_promedio < 50000000 & duenos_promedio > 0) %>%
-  ggplot(aes(x=price,y=log(duenos_promedio))) +
+  ggplot(aes(x=log(price),y=log(duenos_promedio))) +
   geom_point(aes(alpha=0.05), show.legend = F) +
   xlab("precio (CLP)") +
   ylab("log(dueños promedio)")
 ```
 
-En general, los juegos tienden a tener precios bajos; conforme crecen tienden a agruparse en ciertos precios "estándar". Por otro lado, los juegos con más descargas son gratis, concentrándose hacia precios cada vez más pequeños conforme aumentan los rangos de dueños.
+En general, los juegos tienden a tener precios bajos; conforme crecen tienden a agruparse en ciertos precios "estándar". Por otro lado, los juegos con más descargas son gratis, concentrándose hacia precios cada vez más pequeños conforme aumentan los rangos de dueños. A pesar de lo anterior, no se aprecia una correlación clara entre las variables.
 
 ### Precio vs Ratings positivos
+
+En este apartado se utilizan transformaciones logarítmicas para suavizar las observaciones y distribuciones.
 
 ```{r}
 steam %>% 
   filter(price<100000) %>%
-  ggplot(aes(x=price,y=log(positive_ratings))) +
+  ggplot(aes(x=log(price),y=log(positive_ratings))) +
   geom_point() + 
   xlab("precio (CLP)") +
   ylab("log(ratings positivos)")
 ```
+
+Al igual que en el ejemplo anterior no se aprecia una correlación clara entre `log(precio)` y `log(ratings_positivos)` y si la hubiera, pareciera ser levemente positiva entre las dos variables.
 
 ### Desarrolladores más elogiados
 
@@ -561,6 +570,17 @@ steam %>%
   
 ```
 
+Algo particular de notar es que los juegos "free to play" tienen muy bajos precios pero se esperaría que fueran totalmente gratis (es decir, iguales a 0). Analizando un poco más detalle podemos ver que los 5 juegos más caros de la categoría "free to play" presentan precios bastantes más altos que 0. Esto nos lleva a pensar que puede estar ocurriendo que ciertas etiquetas de género estén mal identificadas o que existen juegos que hayan cambiado de género pero que el cambio no se haya visto reflejado en la base de datos.
+
+```{r}
+steam %>% 
+  filter(`Free to Play` == 1) %>%
+  select(name,price) %>%
+  arrange(-price) %>%
+  head(5)
+```
+
+
 ### Géneros más descargados
 
 ```{r}
@@ -611,6 +631,8 @@ steam %>%
   cor() %>%
   corrplot()
 ```
+
+Con la información anterior podemos notar que la variable `price` no está fuertemente correlacionada con ninguna variable. Por otro lado, un aspecto interesante es el hecho que la cantidad de dueños promedio está fuertemente correlacionada positivamente con las variables de ratings. Esto hace concluir que la cantidad de ratings (ya sean positivos o negativos) podrían estar reflejando la popularidad de los juegos.
 
 ### Precios de géneros de juego
 
