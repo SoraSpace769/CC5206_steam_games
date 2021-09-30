@@ -464,6 +464,8 @@ steam %>%
 
 ## Analizando relaciones
 
+En este apartado se realizan transformaciones logarítmicas a algunas variables para suavizar las observaciones y distribuciones.
+
 ### Precio vs Cantidad de dueños
 
 ```{r}
@@ -478,8 +480,6 @@ steam %>%
 En general, los juegos tienden a tener precios bajos; conforme crecen tienden a agruparse en ciertos precios "estándar". Por otro lado, los juegos con más descargas son gratis, concentrándose hacia precios cada vez más pequeños conforme aumentan los rangos de dueños. A pesar de lo anterior, no se aprecia una correlación clara entre las variables.
 
 ### Precio vs Ratings positivos
-
-En este apartado se utilizan transformaciones logarítmicas para suavizar las observaciones y distribuciones.
 
 ```{r}
 steam %>% 
