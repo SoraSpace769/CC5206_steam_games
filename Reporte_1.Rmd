@@ -407,7 +407,7 @@ Algunas de las más frecuentes son:
 
 ```{r}
 steam %>%
-  select(55:83) %>%
+  select(56:84) %>%
   summarise_all(sum) %>%
   melt() %>%
   arrange(-value) %>%
