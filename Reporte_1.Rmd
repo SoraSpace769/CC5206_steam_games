@@ -1,5 +1,5 @@
 ---
-title: "Reporte Hito 1"
+title: "Reporte Hito 1 Minería de Datos, Grupo 3"
 output:
   html_document: 
     number_sections: yes
@@ -20,29 +20,37 @@ text-align: justify}
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
+## Integrantes
+- Sofía Castro
+- Luis Jiménez
+- Gerán Matamoro
+- Nicolás Olivero
+- Alexander Walmsley
 
 # Introducción
 
 ## Contexto/Motivación
 
-El mercado de los videojuegos, un área de interés común para los integrantes del grupo, ha crecido muchísimo en los últimos años. Esto se aprecia tanto al observar la cantidad de personas aficionadas a este hobby, la variedad de juegos publicados cada año, y los avances en gráficos y otras tecnologías que se ha logrado con el tiempo.
+El mercado de los videojuegos, un área de interés común para los integrantes del grupo, ha crecido muchísimo en los últimos años. Esto se aprecia tanto al observar la cantidad de personas aficionadas a este hobby como la variedad de juegos publicados cada año, además de los avances en gráficos y otras tecnologías que se han logrado con el tiempo.
 
-Resulta interesante además porque plataformas como Steam e Itch.io permiten que desarrolladores independientes o grupos pequeños de éstos puedan ser visibilizados y publicar sus juegos sin necesitar de grandes inversiones, volviendo alcanzable ingresar y/o dedicarse al área.
+Otro detalle relevante es el aporte que hoy en día ofrecen plataformas de gestión y venta de videojuegos como Steam e Itch.io, las que permiten que desarrolladores independientes o grupos pequeños de estos puedan ser visibilizados y publicar sus juegos sin necesitar de grandes inversiones, volviendo alcanzable ingresar y/o dedicarse al área.
 
 ## Datos de estudio
 
-El dataset escogido para el proyecto corresponde a información respecto a videojuegos recopilada de la plataforma Steam. Fue obtenido originalmente de [Kaggle](https://www.kaggle.com/nikdavis/steam-store-games).
+El dataset escogido para el proyecto corresponde a información respecto a videojuegos recopilada de la plataforma Steam. Fue obtenido originalmente de [Kaggle](https://www.kaggle.com/nikdavis/steam-store-games). 
+
+El autor de este dataset [comenta](https://nik-davis.github.io/posts/2019/steam-data-collection/) que los datos fueron extraídos utilizando una plataforma externa, SteamSpy, la cual tiene una API que recopila al detalle varias estadísticas de Steam. Este dataset contiene estadísticas hasta el mes de mayo del 2019.
 
 ## Planteamiento del problema
 
-Por un lado, considerando que se ha presenciado en persona la evolución de los videojuegos, resulta atractiva la idea de encontrar (más allá de la impresión personal que se pueda tener) evidencia tangible de tendencias que se han dado respecto a los juegos con el paso de los años.
+Por un lado, como a nivel personal y grupal se ha observado la evolución de los videojuegos en la época contemporánea, resulta atractiva la idea de encontrar (más allá de la impresión personal que se pueda tener) evidencia tangible de tendencias que se han dado respecto a los juegos con el paso de los años.
 
 Observando lo vigente que resulta el área, y aprovechando la oportunidad del proyecto de este curso,  se aspirará también a identificar patrones que puedan resultar provechosos al momento de elegir ciertas características que tendrá un juego, tal que incluirlos pueda significar un mayor interés por parte del público.
 
 
 # Exploración de datos
 
-La descarga consta de 6 archivos, donde la información más importante respecto a los juegos se encuentra en `steam.csv`.
+La descarga desde Kaggle se compone de 6 archivos csv, donde la información más importante respecto a los juegos se encuentra en `steam.csv`. Este será el archivo utilizado para realizar la exploración que se describe en este documento.
 
 ## Descripción
 
@@ -64,9 +72,9 @@ A continuación se describen los atributos de la tabla principal, `steam.csv`.
 - **owners:** Rangos estimados de la cantidad de usuarios que descargaron un juego.
 - **price:** Precio estándar del juego (en GBP o libras esterlinas).
 
-Para mayor facilidad en la interpretación de los precios fue necesario convertirlos a la moneda local (CLP). No confundir con los precios reales en la tienda de Chile.
+Para mayor facilidad en la interpretación de los precios, fue necesario hacer una conversión a la moneda local (CLP). No confundir con los precios reales en la tienda de Chile, los cuales pueden no ser iguales a los que se muestren en este análisis.
 
-Adicionalmente, existen otros atributos que de forma similar a las compañías desarrolladoras y distribuidoras, se encontraban separadas con punto y coma, pero al ser una cantidad de opciones más reducida, se decidió pre-procesar los datos y transformar cada uno de los atributos en columnas adicionales indicando si incluyen o no cierta característica, entre todas las opciones posibles. Corresponden a los siguientes:
+Adicionalmente, existen otros atributos que, de forma similar a las compañías desarrolladoras y distribuidoras, se encontraban separadas con punto y coma, pero al ser una cantidad de opciones más reducida se decidió pre-procesar los datos y transformar cada uno de los atributos en columnas adicionales, indicando si incluyen o no cierta característica, de entre todas las opciones posibles. Los atributos alterados fueron los siguientes:
 
 - **platforms:** Plataformas (PC) soportadas.
 - **categories:** Características adicionales de los juegos, como soporte de tecnologías y cantidad de jugadores permitidos.
@@ -75,7 +83,7 @@ Adicionalmente, existen otros atributos que de forma similar a las compañías d
 El dataset original no contiene elementos vacíos (NaN) y posee 27075 observaciones que corresponden a los juegos presentes en la plataforma steam.
 
 
-## Preprocesamiento de la base de datos
+## Preprocesamiento del dataset
 
 ```{r}
 
@@ -133,15 +141,15 @@ steam %>%
          price) %>%
   summary()
 ```
-- Se observó que el atributo `english` no resultará muy útil pues casi todos los juegos están en inglés (lo que es esperable al ser Steam una plataforma originalmente en este idioma).
-- La mayoría de los juegos tiene una cantidad baja de `achievements`, aunque existen algunos que parecieran enfocarse en lo contrario y presentan un número absurdamente alto de logros.
-- Existe una clara tendencia a publicar opiniones positivas por sobre las negativas; en ambos casos habrá que tomar en cuenta una escala de `positive_ratings` y `negative_ratings` en caso de comparar juegos entre sí, pues sino los juegos "más populares" posiblemente terminarían opacando a los demás.
+- Se observa que el atributo `english` no resultará muy útil pues casi todos los juegos están en inglés (lo que es esperable al ser Steam una plataforma originalmente en este idioma).
+- La mayoría de los juegos tienen una cantidad baja de `achievements`, aunque existen algunos que parecieran enfocarse en lo contrario y presentan un número absurdamente alto de logros.
+- Existe una clara tendencia a publicar opiniones positivas por sobre las negativas; al comparar juegos en términos de popularidad habría que tomar en cuenta una escala de `positive_ratings` y `negative_ratings`, de otra forma los juegos "más populares" posiblemente terminarían opacando a los demás.
 - Resulta interesante observar más de la mitad de los juegos agregados a las bibliotecas de los usuarios no son jugados: tanto `average_playtime` como `median_playtime` tienen mediana cero.
 - La mayor parte de los juegos tienen bajos precios (75% bajo $8000 CLP).
 
 Dado que buena parte de los valores de las variables `average_playtime` y `median_playtime` están fuertemente concentrados en 0, a continución se muestran
 sus valores de tendencia central filtrando que sean mayor a cero (sólo para 
-objetivos de análisis).
+objetivos de análisis). De esta forma, se pueden caracterizar los tiempos de juego de videojuegos que fueron jugados al menos una vez.
 
 ```{r}
 steam %>%
@@ -161,16 +169,18 @@ steam %>% filter(achievements==0) %>% nrow()
 steam %>% filter(achievements!=0) %>% nrow()
 ```
 
-Para estudiar un poco más la distribución de la cantidad de logros se descartaron los casos donde no habían. En general parecen centrarse alrededor de 20 logros. Se observa una pequeña tendencia de juegos con más logros a llegar a un número cerrado (50), pero fuera de esta anomalía lo esperable es que una mayor cantidad de logros se vuelve cada vez más inusual.
+Para estudiar un poco más la distribución de la cantidad de logros se, descartaron los juegos que no tienen dicha característica. 
 
 ```{r}
 ggplot(steam[steam$achievements<100 & steam$achievements>0,], aes(x = achievements)) +
   geom_density() + ggtitle("Densidad de distribución de achievements mayores a 0 y menores a 100")
 ```
 
+Se puede apreciar en el gráfico de la distribución que la mayor parte de los juegos del dataset posee una cantidad cercana los 20 logros. Se observa una pequeña tendencia de juegos con más logros al ubicarse en torno a los 50, pero fuera de esta anomalía lo esperable es que una mayor cantidad de logros se vuelva cada vez más inusual de ver en un juego.
+
 ### Ratings
 
-A continuación, se muestran los tabulados correspondientes a los 10 juegos con mayor cantidad de `positive_ratings`, de `negative_ratings` y también de una variable auxiliar `rating_neto` que corresponde a la diferencia entre los `positive_ratings` y `negative_ratings`.
+A continuación se muestran los valores tabulados correspondientes a los 10 juegos con mayor cantidad de `positive_ratings`, de `negative_ratings` y también de una variable auxiliar `rating_neto`, que corresponde a la diferencia entre los `positive_ratings` y `negative_ratings`.
 
 ```{r}
 steam %>% 
@@ -192,9 +202,11 @@ steam %>%
   head(10)
 ```
 
+Se puede observar que la mayoría del top 10 de juegos con mayor cantidad de ratings positivos también se encuentra en el top 10 de juegos con mayor cantidad de ratings negativos, lo cual parece indicar que los juegos populares tienden a tener una gran cantidad de calificaciones positivas y negativas al mismo tiempo.
+
 ### Tiempos de juego
 
-A continuación se muestran los 10 juegos con mayor `average_playtine` y `median_playtime`. Cabe mencionar que los resultados obtenidos abren muchas dudas de la fiabilidad y validez de estas variables ya que luego de realizar un análisis cualitativo de varios de estos juegos pudimos concluir que no es esperable que posean tantas horas de juegos. Dado lo anterior, hemos decidido continuar con cautela respecto a estas variables y seguir investigando si pudiesen contener errores o outliers muy extremos.
+A continuación se muestran los 10 juegos con mayor `average_playtine` y `median_playtime`.
 
 ```{r}
 steam %>% 
@@ -209,9 +221,13 @@ steam %>%
   head(10)
 ```
 
+Los resultados obtenidos abren muchas dudas de la fiabilidad y validez de estas variables, ya que luego de realizar un análisis cualitativo de varios de estos juegos se observó que no es esperable que posean tantas horas de juego. Dado lo anterior, se decidió continuar con cautela respecto a estas variables, y seguir investigando si pudiesen contener errores o outliers muy extremos.
+
+Un ejemplo se puede observar en el juego [The Abbey of Crime Extensum](https://howlongtobeat.com/game.php?id=38570), que en el dataset reporta 190625 minutos (unas 3177 horas) y en la plataforma `How Long to Beat` reporta, en el caso más extremo, apenas 5 horas.
+
 ### Precio
 
-A continuación, se muestran los 10 juegos con mayor precio en steam y también se incluyen dos tablas de los 10 juegos gratis (precio = 0) con mayor cantidad de ratings positivos y negativos. 
+A continuación se muestran los 10 juegos con mayor precio en Steam , junto con dos tablas de los 10 juegos gratis (precio = 0) con mayor cantidad de ratings positivos y negativos. 
 
 ```{r}
 steam %>% 
@@ -219,6 +235,7 @@ steam %>%
   arrange(-price) %>%
   head(10)
 ```
+
 ```{r}
 steam %>% 
   filter(price == 0) %>%
@@ -241,7 +258,7 @@ steam %>%
   arrange(-rating_neto) %>%
   head(10)
 ```
-
+PONER COMENTARIOS ACERCA DE ESTOS RESULTADOS
 
 ## Atributos Categóricos
 
@@ -261,7 +278,7 @@ steam %>%
 
 ```
 
-Vale la pena destacar que los datos consideran desde el año 1997 hasta 2019. Hay muy pocos juegos para los primeros años de la plataforma, así que se observó con mayor atención los años siguientes.
+Vale la pena destacar que los datos consideran desde el año 1997 hasta 2019. Hay muy pocos juegos que tuvieron su lanzamiento antes del año 2006, así que se observó con mayor atención los años 2006 y posteriores.
 
 ```{r}
 
@@ -275,7 +292,7 @@ steam %>%
   ggtitle("Cantidad de juegos publicados en la plataforma Steam según año")
 ```
 
-Como los datos fueron recolectados en 2019, es esperable que no se tenga información completa respecto al último año; fuera de este caso, la cantidad de juegos lanzados parece aumentar cada año.
+Como los datos fueron recolectados en 2019, es esperable que no se tenga información completa respecto al último año. A continuación se observa que los datos solo llegan hasta el mes 5 del 2019, es decir Mayo.
 
 ```{r}
 # Confirmando el juego más reciente en la tabla (mes):
@@ -283,7 +300,7 @@ steam %>%
   filter(year==2019) %>% select(month) %>% arrange(-month) %>% head(1)
 ```
 
-Bajo esta consideración, también puede resultar interesante ver cómo se distribuyen a través del año.
+Fuera de este caso, la cantidad de juegos lanzados parece aumentar cada año. Bajo esta consideración, también puede resultar interesante ver cómo se distribuye la cantida de juegos a través del año y con un periodo mensual.
 
 ```{r}
 steam %>%
@@ -293,10 +310,11 @@ steam %>%
   xlab("mes") +
   ylab("cantidad") + ggtitle("Cantidad de juegos publicados en plataforma Steam según el mes")
 ```
+Los valores entre meses son bastante parecidos, pero se puede observar que los valores más altos de lanzamientos se dan en torno a Marzo y Octubre.
 
 ### Plataformas
 
-En este apartado se puede ver la distribución de las plataformas a lo largo del dataframe steam.
+En este apartado se puede ver la distribución de las plataformas donde los juegos de Steam están disponibles.
 
 ```{r}
 if (!require('reshape')) install.packages('reshape'); library('reshape')
@@ -327,15 +345,17 @@ steam %>%
 
 ```
 
-Más aún, prácticamente nadie crea contenido exclusivo para Mac o Linux. Lo común es que los desarrolladores liberen sus juegos en Windows, y en ocasiones también deciden agregar otras plataformas.
+Otra situación que se da es que prácticamente nadie crea contenido exclusivo para Mac o Linux. Lo común es que los desarrolladores liberen sus juegos en Windows, y en ocasiones también deciden agregar otras plataformas.
 
 
 ### Desarrolladores
 
+Existen muchísimos desarrolladores en Steam, como se meustra a continuación.
+
 ```{r}
 steam %>% select(developer) %>% unique() %>% nrow()
 ```
-Existen muchísimos desarrolladores en Steam; posiblemente la mayoría de estos solo publican un único juego:
+De todos estos, la gran mayoría solo tiene 1 juego publicado:
 
 ```{r}
 steam %>% 
@@ -344,7 +364,7 @@ steam %>%
   filter(n==1) %>%
   nrow()
 ```
-Por su parte, algunos de los desarrolladores que producen más contenido son:
+Por otra parte, a continuación se muestran algunos de los desarrolladores que más contenido tienen lanzado en Steam:
 
 ```{r}
 steam %>% 
@@ -356,11 +376,12 @@ steam %>%
 
 ### Distribuidores
 
+También se observa una gran cantidad de compañías distribuidoras:
+
 ```{r}
 steam %>% select(publisher) %>% unique() %>% nrow()
 ```
-
-Las compañías distribuidoras también son muchísimas como para analizarlas individualmente. Se comporta de forma similar a los desarrolladores: gran parte de ellos se asocia solo a un juego.
+Se observa un comportamiento similar a los desarrolladores: gran parte de ellos se asocia solo a un juego.
 
 ```{r}
 steam %>% 
@@ -387,13 +408,13 @@ Existen un total de 6 categorías según el sistema inglés.
 unique(steam$required_age)
 ```
 
-La mayor parte de los juegos no indican un rating:
+La mayor parte de los juegos no indican un rating (clasificación 0):
 
 ```{r}
 steam %>% count(required_age)
 ```
 
-Sin embargo, esto puede deberse a que solo es importante etiquetarlos cuando se trata de juegos para mayores de edad, y que por eso la tendencia sea a aumentar la cantidad con el rating de edad.
+Lo anterior puede deberse a que solo es importante etiquetarlos cuando se trata de juegos para mayores de edad, y que por eso la tendencia sea a aumentar la cantidad con el rating de edad. Otra situación que podría pasar es que el rating está pendiente de evaluación del organismo PEGI UK.
 
 
 ### Categorías
@@ -433,9 +454,11 @@ Algunos de los anteriores corresponden a géneros de software y no necesariament
   head(15))
 ```
 
+PONER UNA TABLA DE GENEROS MENOS POPULARES POR AQUÍ
+
 ### Cantidad de dueños
 
-Para distinguir de mejor forma los grupos se prefirió convertir el valor a numérico promediando ambos límites del rango entregado originalmente (`dueños promedio`).
+Para distinguir de mejor forma los grupos se prefirió convertir el valor asociado (originalmente un intervalo) a un valor numérico, promediando ambos límites de dicho intervalo. Los intervalos se distinguen bajo el atributo (`dueños promedio`).
 
 ```{r}
 owners <- str_split(steam$owners, "-")
@@ -447,7 +470,7 @@ steam <- steam %>%
   mutate(duenos_promedio = (owners_1 + owners_2)/2)
 ```
 
-Sin embargo, para conocer cuántos juegos hay por rango:
+Sin embargo, para conocer cuántos juegos hay por rango se realizó lo siguiente:
 
 ```{r}
 owners_lbl <- c("0-20k", "20k-50k", "50k-100k", "100k-200k", "200k-500k", "500k-1M", "1M-2M", "2M-5M", "5M-10M", "10M-20M", "20M-50M", "50M-100M", "100M-200M")
@@ -458,7 +481,7 @@ steam %>%
   scale_y_log10() +
   geom_bar(aes(x=as.factor(duenos_promedio), y=n), stat="identity") +
   scale_x_discrete(labels=owners_lbl) +
-  ylab("cantidad") +
+  ylab("cantidad de juegos") +
   xlab("rangos de cantidad de dueños") +
   coord_flip() + ggtitle("Frecuencia de rangos de cantidades de dueños")
 ```
@@ -540,6 +563,7 @@ steam %>%
   xlab("géneros") +
   ylab("media precio") + ggtitle("Los 10 géneros con la media de precios más alta")
 ```
+Se puede observar que los géneros más caros están asociados a softwares de edición de fotos, video, audio, entre otros, que no son en la práctica videojuegos.
 
 ### Géneros más económicos
 
@@ -571,7 +595,7 @@ steam %>%
   
 ```
 
-Algo particular de notar es que los juegos "free to play" tienen muy bajos precios pero se esperaría que fueran totalmente gratis (es decir, iguales a 0). Analizando un poco más detalle podemos ver que los 5 juegos más caros de la categoría "free to play" presentan precios bastantes más altos que 0. Esto nos lleva a pensar que puede estar ocurriendo que ciertas etiquetas de género estén mal identificadas o que existen juegos que hayan cambiado de género pero que el cambio no se haya visto reflejado en la base de datos.
+Algo particular de notar es que los juegos "Free to Play" tienen muy bajos precios pero se esperaría que fueran totalmente gratis (es decir, iguales a 0). Analizando un poco más en detalle se puede observar que los 5 juegos más caros de la categoría "Free to Play" presentan precios bastante más altos que 0. Esto sugiere que ciertas etiquetas de género estén mal identificadas o que existan juegos que hayan cambiado de género, pero que el cambio no se haya visto reflejado en el dataset.
 
 ```{r}
 steam %>% 
@@ -611,6 +635,7 @@ steam %>%
   
 ```
 
+Se puede observar que algunos los géneros menos descargados también aparecen en los géneros con precio más alto en Steam.
 
 ### Correlaciones lineales
 
@@ -633,7 +658,7 @@ steam %>%
   corrplot()
 ```
 
-Con la información anterior podemos notar que la variable `price` no está fuertemente correlacionada con ninguna variable. Por otro lado, un aspecto interesante es el hecho que la cantidad de dueños promedio está fuertemente correlacionada positivamente con las variables de ratings. Esto hace concluir que la cantidad de ratings (ya sean positivos o negativos) podrían estar reflejando la popularidad de los juegos.
+Con la información anterior se puede notar que la variable `price` no está fuertemente correlacionada con ninguna variable. Por otro lado, un aspecto interesante es el hecho que la cantidad de dueños promedio está fuertemente correlacionada positivamente con las variables de ratings. Se puede concluir que la cantidad de ratings (ya sean positivos o negativos) podrían estar reflejando la popularidad de los juegos.
 
 ### Precios de géneros de juego
 
@@ -648,6 +673,7 @@ steam %>%
   xlab("géneros") +
   ylab("precio") + ggtitle("Boxplots de precio de los 5 géneros más populares")
 ```
+AGREGAR COMENTARIOS DE LA PRESENTACIÓN ACÁ
 
 ### Cantidad de juegos de un género por año
 
@@ -663,6 +689,7 @@ steam %>%
   plot_ly(x=~year ,y = ~q_juegos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers') %>%
   layout(xaxis=list(title="año"), yaxis=list(title="cantidad"), title = "Cantidad de nuevos juegos incluidos en la plataforma \n por año para los 5 géneros más populares") 
 ```
+AGREGAR COMENTARIOS DE LA PRESENTACIÓN ACÁ
 
 ### Evolución de la media de cantidad de dueños por año para los 5 géneros más populares
 
@@ -677,21 +704,9 @@ steam %>%
   layout(xaxis=list(title="año"), yaxis=list(title="cantidad de dueños media"), title = "Evolución de la media de cantidad de dueños por año \n para los 5 géneros más populares")
 ```
 
-### Variación de dueños promedio por año de lanzamiento
-
-```{r}
-steam %>% 
-  select(appid,price,year,duenos_promedio,Indie,Action,Casual,Adventure,Strategy) %>%
-  melt(id = c("appid","price","year","duenos_promedio")) %>%
-  filter(value == 1 & year >=2007) %>%
-  group_by(variable, year) %>%
-  summarise(media_duenos = mean(duenos_promedio)) %>%
-  plot_ly(x=~year ,y = ~media_duenos,group = ~variable, color = ~variable ,type = "scatter" ,mode='markers', frame = ~year, size = 10) %>%
-  layout(xaxis=list(title="año"), yaxis=list(title="cantidad de dueños media"))
-```
 
 
-# Preguntas y problemas
+# Problemáticas que resolver a futuro
 
 1. ¿Cómo ha evolucionado la cantidad de juegos que lanzan los desarrolladores en el tiempo?
 
@@ -701,3 +716,7 @@ steam %>%
 
 4. ¿Cuáles son los géneros de juegos indie que producen más engagement? (mayores playtimes y más owners)
 
+AHONDAR CADA PREGUNTA CON COMENTARIOS DE LA PRESENTACIÓN
+
+# Participación del equipo de trabajo
+DETALLAR QUÉ HIZO CADA PERSONA AL PRODUCIR ESTE INFORME
