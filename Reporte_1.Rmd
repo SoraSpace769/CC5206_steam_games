@@ -165,7 +165,7 @@ Para estudiar un poco más la distribución de la cantidad de logros se descarta
 
 ```{r}
 ggplot(steam[steam$achievements<100 & steam$achievements>0,], aes(x = achievements)) +
-  geom_density()
+  geom_density() + ggtitle("Densidad de distribución de achievements mayores a 0 y menores a 100")
 ```
 
 ### Ratings
@@ -271,7 +271,8 @@ steam %>%
   ggplot(aes(x=year,y=n, label=n)) + geom_bar(stat = 'identity') +
   xlab("año") + 
   ylab("cantidad") +
-  geom_text(vjust = -0.5, colour = "black", size = 2.5) 
+  geom_text(vjust = -0.5, colour = "black", size = 2.5) + 
+  ggtitle("Cantidad de juegos publicados en la plataforma Steam según año")
 ```
 
 Como los datos fueron recolectados en 2019, es esperable que no se tenga información completa respecto al último año; fuera de este caso, la cantidad de juegos lanzados parece aumentar cada año.
@@ -290,7 +291,7 @@ steam %>%
   summarise(n = n()) %>%
   ggplot(aes(x= as.factor(month), y=n, label=n)) + geom_bar(stat = 'identity') +
   xlab("mes") +
-  ylab("cantidad") 
+  ylab("cantidad") + ggtitle("Cantidad de juegos publicados en plataforma Steam según el mes")
 ```
 
 ### Plataformas
@@ -308,7 +309,7 @@ steam %>%
   geom_bar(stat = 'identity') +
   geom_text(vjust = 4, colour = "white") +
   xlab("plataformas") +
-  ylab("cantidad")
+  ylab("cantidad") + ggtitle("Juegos disponibles según plataforma (no excluyentes)")
 ```
 
 Solo hay 3 plataformas en PC, siendo liderado por Windows.
@@ -459,7 +460,7 @@ steam %>%
   scale_x_discrete(labels=owners_lbl) +
   ylab("cantidad") +
   xlab("rangos de cantidad de dueños") +
-  coord_flip()
+  coord_flip() + ggtitle("Frecuencia de rangos de cantidades de dueños")
 ```
 
 ## Analizando relaciones
@@ -473,8 +474,8 @@ steam %>%
   filter(price < 50000 & duenos_promedio < 50000000 & duenos_promedio > 0) %>%
   ggplot(aes(x=log(price),y=log(duenos_promedio))) +
   geom_point(aes(alpha=0.05), show.legend = F) +
-  xlab("precio (CLP)") +
-  ylab("log(dueños promedio)")
+  xlab("log(precio (CLP))") +
+  ylab("log(dueños promedio)") + ggtitle("Scatter plot entre log de precio y log de dueños promedio")
 ```
 
 En general, los juegos tienden a tener precios bajos; conforme crecen tienden a agruparse en ciertos precios "estándar". Por otro lado, los juegos con más descargas son gratis, concentrándose hacia precios cada vez más pequeños conforme aumentan los rangos de dueños. A pesar de lo anterior, no se aprecia una correlación clara entre las variables.
@@ -486,8 +487,8 @@ steam %>%
   filter(price<100000) %>%
   ggplot(aes(x=log(price),y=log(positive_ratings))) +
   geom_point() + 
-  xlab("precio (CLP)") +
-  ylab("log(ratings positivos)")
+  xlab("log(precio (CLP))") +
+  ylab("log(ratings positivos)") + ggtitle("Scatter plot entre log de precio y log de ratings positivos")
 ```
 
 Al igual que en el ejemplo anterior no se aprecia una correlación clara entre `log(precio)` y `log(ratings_positivos)` y si la hubiera, pareciera ser levemente positiva entre las dos variables.
@@ -537,7 +538,7 @@ steam %>%
   ggplot(aes(reorder(variable,-media_precio_genero),media_precio_genero)) +
   geom_bar(stat = 'identity') +theme(axis.text.x = element_text(angle = 90)) +
   xlab("géneros") +
-  ylab("precio medio")
+  ylab("media precio") + ggtitle("Los 10 géneros con la media de precios más alta")
 ```
 
 ### Géneros más económicos
@@ -566,7 +567,7 @@ steam %>%
   ggplot(aes(reorder(variable,media_precio_genero),media_precio_genero)) +
   geom_bar(stat = 'identity') +theme(axis.text.x = element_text(angle = 90)) +
   xlab("géneros") +
-  ylab("precio medio")
+  ylab("media precio") + ggtitle("Los 10 géneros con la media de precios más baja")
   
 ```
 
@@ -645,7 +646,7 @@ steam %>%
   ggplot(aes(variable,price)) + 
   geom_boxplot() +
   xlab("géneros") +
-  ylab("precio")
+  ylab("precio") + ggtitle("Boxplots de precio de los 5 géneros más populares")
 ```
 
 ### Cantidad de juegos de un género por año
@@ -660,10 +661,10 @@ steam %>%
   group_by(variable, year) %>%
   summarise(q_juegos = n()) %>%
   plot_ly(x=~year ,y = ~q_juegos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers') %>%
-  layout(xaxis=list(title="año"), yaxis=list(title="cantidad"))
+  layout(xaxis=list(title="año"), yaxis=list(title="cantidad"), title = "Cantidad de nuevos juegos incluidos en la plataforma \n por año para los 5 géneros más populares") 
 ```
 
-### Precios de géneros de juego por año
+### Evolución de la media de cantidad de dueños por año para los 5 géneros más populares
 
 ```{r}
 steam %>% 
@@ -673,7 +674,7 @@ steam %>%
   group_by(variable, year) %>%
   summarise(media_duenos = mean(duenos_promedio)) %>%
   plot_ly(x=~year ,y = ~media_duenos,group = ~variable, color = ~variable ,type = "scatter" ,mode='lines+markers') %>% layout(xaxis = list(range=c(2006,2020))) %>%
-  layout(xaxis=list(title="año"), yaxis=list(title="cantidad de dueños media"))
+  layout(xaxis=list(title="año"), yaxis=list(title="cantidad de dueños media"), title = "Evolución de la media de cantidad de dueños por año \n para los 5 géneros más populares")
 ```
 
 ### Variación de dueños promedio por año de lanzamiento
