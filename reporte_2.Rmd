@@ -52,7 +52,7 @@ Observando lo vigente que resulta el área, y aprovechando la oportunidad del pr
 
 La descarga desde Kaggle se compone de 6 archivos csv, donde la información más importante respecto a los juegos se encuentra en `steam.csv`. Este será el archivo utilizado para realizar la exploración que se describe en este documento.
 
-**Nota:** Esta parte del informe difiere con lo entregado para el hito 1 para resumir mejor la información. En esta instancia realizamos una serie de cambios: definimos preguntas finales más concisas para llegar a resultados más tangibles, omitimos las exploraciones que no colaboran a responder las preguntas, eliminamos varios bloques de código. 
+**Nota:** Esta parte del informe difiere con lo entregado para el hito 1 para resumir mejor la información. En esta instancia realizamos una serie de cambios: omitimos las exploraciones que no colaboran a responder las preguntas, eliminamos varios bloques de código. 
 
 ## Descripción
 
@@ -469,6 +469,10 @@ Por lo que podría ser prudente aplicar filtros o transformaciones adecuadas al 
 
 ## Mejorar Hito 1
 
+Como se mencionó en la parte, se realizaron cambios explícitos en la parte de la exploración de los datos con el fin de optimizar la presentación del reporte. En esta parte redefiniremos las preguntas planteadas y aplicaremos alteraciones una vez más al dataset para que, teniendo en cuenta nuestros conocimientos recientemente adquiridos sobre minería de datos, sea posible llegar a resultados más tangibles. 
+
+### Replanteamiento de las preguntas
+
 Como se mencionó anteriormente, se redujo el análisis exploratorio para mostrar unicamente información relevante y mejor presentada. También replantearemos nuestras interrogantes:
 
 1. ¿Cómo abordar problemas con los datos originales?
@@ -512,7 +516,7 @@ steam_nuevo <- steam_nuevo  %>%
   select(-nGenres)
 ```
 
-Aplicamos un último cambio. Dado a que habíamos encontrado datos de juegos catalogados como Free 2 Play a pesar de tener precio mayor que cero, y a que el rango de precios se concentra en valores bajos, decidimos dejar una sola columna que reemplaza el valor de todos los juegos pagos por un 1. Esto nos facilitará el explorar los datos en mayor profuncidad.
+Aplicamos un último cambio. Dado a que habíamos encontrado datos de juegos catalogados como Free 2 Play a pesar de tener precio mayor que cero, y a que el rango de precios tiene una alta concentración en valores bajos, decidimos dejar una sola columna que reemplaza el valor de todos los juegos pagos por un 1. Esto nos facilitará el explorar los datos en mayor profuncidad.
 
 ```{r}
 steam_nuevo$price <- replace(steam_nuevo$price,steam_nuevo$price>0,1)
@@ -533,7 +537,30 @@ steam_nuevo %>%
   select(c(10:24)) %>%
   colnames(.)
 ```
-## Aplicar métodos de análisis al dataset
+## Propuestas para responder las preguntas
+
+En este punto no tenemos algo como clases predefinidas para nuestro subconjunto de datos, pero sí tenemos una noción de cuales juegos son los más populares. Podemos aplicar un algoritmo de clustering sobre el dataset para obtener agrupaciones que reflejen apropiadamente el éxito de los juegos que las componen, pero tendríamos que porbar con diferentes parámetros o incluso modificarlos aún más.
+
+Para todo esto usaremos diversas librerias de python enfocadas a minería de datos, y lo podemos hacer sin movernos de R gracias a la librería RETICULATE:
+
+```{r setup, include=FALSE, echo=TRUE}
+if (!require('reticulate')) install.packages('reticulate'); library('reticulate')
+repl_python()
+reticulate::py_config()
+use_python("/usr/bin/python83")
+```
+```{r}
+steam_nuevo <- read.csv("data/steam_ready.csv", encoding = "UTF-8", as.is = F)
+```
+```{python}
+import matplotlib.pyplot as plt 
+steam_py = r.steam_nuevo
+plt.scatter(steam_py[:,7],steam_py[:,8])
+plt.title("Scatterplot: dueños promedio vs ranking neto")
+plt.show
+```
+
+### Aplicar métodos de análisis al dataset
 
 # Participación del equipo de trabajo
 - Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto.
