@@ -497,6 +497,8 @@ Primero podemos eliminar directamente los atributos que no nos serviran más.
 
 Eliminaremos todas las columnas referentes a la fecha de salida de un juego, excepto **year**.
 
+Eliminaremos las filas con los 10 valores más altos para la variable **price**, pues luego de inspeccionarlos podemos deducir con confianza que se trata de outliers y que estorbarán al momento de explorar en mayor profundidad los datos.
+
 Eliminaremos las columnas **positive_ratings** y **negative_ratings** para quedarnos solo con **rating_neto** y **rating_perc**, asi tenemos la misma información pero de otra manera que podría ser más útil.
 
 Luego; eliminaremos **Plataforms** por poseer una unica clase dominante, eliminaremos **categories** ya que se trata más de un aspecto técnico de cada software que no nos dice mucho, y eliminaremos cada variable dummy derivada de éstas. Además eliminaremos los atributos de playtime, por demostrar ser poco fiables.
@@ -510,19 +512,18 @@ steam_nuevo <- steam %>%
   subset(select = -c(3,4,7:12,13,15:83,90,91,101:105,107:113,115:117)) %>%
   relocate(c(22:25), .after = 5)
 
+top_price <- steam_nuevo %>%
+  arrange(-price) %>%
+  head(10)
+
+steam_nuevo <- steam_nuevo[ !(steam_nuevo$appid %in% top_price$appid), ]
+
 steam_nuevo <- steam_nuevo  %>%
   mutate(nGenres = rowSums(select(steam_nuevo,c(10:25)))) %>%
   filter(nGenres > 0) %>%
   select(-nGenres)
 ```
 
-Aplicamos un último cambio. Dado a que habíamos encontrado datos de juegos catalogados como Free 2 Play a pesar de tener precio mayor que cero, y a que el rango de precios tiene una alta concentración en valores bajos, decidimos dejar una sola columna que reemplaza el valor de todos los juegos pagos por un 1. Esto nos facilitará el explorar los datos en mayor profuncidad.
-
-```{r}
-steam_nuevo$price <- replace(steam_nuevo$price,steam_nuevo$price>0,1)
-colnames(steam_nuevo)[5] <- "Paid"
-steam_nuevo <- select(steam_nuevo,-11)
-```
 Atributos básicos del nuevo dataset:
 ```{r, echo=FALSE}
 # Atributos de los datos
@@ -559,6 +560,8 @@ plt.scatter(steam_py[:,7],steam_py[:,8])
 plt.title("Scatterplot: dueños promedio vs ranking neto")
 plt.show
 ```
+
+**Nota:** Esto no funcionó y al final se trabajó con pandas en python3 (jupyter notebook).
 
 ### Aplicar métodos de análisis al dataset
 
