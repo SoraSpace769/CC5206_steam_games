@@ -538,28 +538,24 @@ steam_nuevo %>%
   select(c(10:24)) %>%
   colnames(.)
 ```
+```{r, eval=FALSE, echo=FALSE}
+steam_nuevo <- read.csv("data/steam_ready2.csv", encoding = "UTF-8", as.is = F)
+```
+
+Antes de continuar observemos la matriz de correlación entre las variables numéricas. Podemos observar que la relación entre los nuevos atributos es más débil que antes. Esto parece algo malo, pero en verdad solo nos dice que cada variable aporta información de manera diferente a las demás.
+
+```{r, echo=FALSE}
+steam_nuevo %>%
+  select(6:10) %>%
+  cor() %>%
+  corrplot()
+```
+
 ## Propuestas para responder las preguntas
 
 En este punto no tenemos algo como clases predefinidas para nuestro subconjunto de datos, pero sí tenemos una noción de cuales juegos son los más populares. Podemos aplicar un algoritmo de clustering sobre el dataset para obtener agrupaciones que reflejen apropiadamente el éxito de los juegos que las componen, pero tendríamos que porbar con diferentes parámetros o incluso modificarlos aún más.
 
 Para todo esto usaremos diversas librerias de python enfocadas a minería de datos, y lo podemos hacer sin movernos de R gracias a la librería RETICULATE:
-
-```{r setup, include=FALSE, echo=TRUE}
-if (!require('reticulate')) install.packages('reticulate'); library('reticulate')
-repl_python()
-reticulate::py_config()
-use_python("/usr/bin/python83")
-```
-```{r}
-steam_nuevo <- read.csv("data/steam_ready.csv", encoding = "UTF-8", as.is = F)
-```
-```{python}
-import matplotlib.pyplot as plt 
-steam_py = r.steam_nuevo
-plt.scatter(steam_py[:,7],steam_py[:,8])
-plt.title("Scatterplot: dueños promedio vs ranking neto")
-plt.show
-```
 
 **Nota:** Esto no funcionó y al final se trabajó con pandas en python3 (jupyter notebook).
 
