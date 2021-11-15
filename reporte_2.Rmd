@@ -477,7 +477,7 @@ Como se mencionó anteriormente, se redujo el análisis exploratorio para mostra
 
 1. ¿Cómo abordar problemas con los datos originales?
 
-Es necesario procesar el grupo de datos para que sea útil no solo al observar sus atributos, también para poder contestar las preguntas que plantearemos y llegar a conclusiones satisfactorias.
+Es necesario re-procesar el grupo de datos para que sea útil no solo al observar sus atributos, también para poder contestar las preguntas que plantearemos y llegar a conclusiones satisfactorias.
 
 2. ¿Cómo ha evolucionado la cantidad de juegos que lanzan los desarrolladores en el tiempo?
 
@@ -553,6 +553,8 @@ steam_nuevo %>%
 
 ## Propuestas para responder las preguntas
 
+La tercera pregunta va enfocada a determinar las variables que determinan si un juego es exitoso, y la cuarta pregunta apunta a usar esta información para encontrar un algoritmo de clasificación predictivo.
+
 En este punto no tenemos algo como clases predefinidas para nuestro subconjunto de datos, pero sí tenemos una noción de cuales juegos son los más populares. Podemos aplicar un algoritmo de clustering sobre el dataset para obtener agrupaciones que reflejen apropiadamente el éxito de los juegos que las componen, pero tendríamos que porbar con diferentes parámetros o incluso modificarlos aún más.
 
 Para todo esto usaremos diversas librerias de python enfocadas a minería de datos, y lo podemos hacer sin movernos de R gracias a la librería RETICULATE:
@@ -560,6 +562,8 @@ Para todo esto usaremos diversas librerias de python enfocadas a minería de dat
 **Nota:** Esto no funcionó y al final se trabajó con pandas en python3 (jupyter notebook).
 
 ### Aplicar métodos de análisis al dataset
+
+
 
 # Participación del equipo de trabajo
 - Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto.
