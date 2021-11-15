@@ -563,7 +563,7 @@ Para todo esto usaremos diversas librerias de python enfocadas a minería de dat
 
 ### Aplicar métodos de análisis al dataset
 
-
+El análisis exploratorio y resultados preliminares del dataset se encuentra en [este link](shorturl.at/bptEN), disculpe las molestias.
 
 # Participación del equipo de trabajo
 - Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto.
