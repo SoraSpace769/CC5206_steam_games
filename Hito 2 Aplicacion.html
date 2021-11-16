@@ -14496,6 +14496,8 @@ a.anchor-link {
 
 <span class="n">df_numeric</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;price&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;duenos_promedio&quot;</span><span class="p">,</span><span class="s2">&quot;rating_neto&quot;</span><span class="p">,</span><span class="s2">&quot;rating_perc&quot;</span><span class="p">]]</span>
 
+<span class="c1"># MinMax = x - min(x) / max(x) - min(x)</span>
+
 <span class="n">x</span> <span class="o">=</span> <span class="n">df_numeric</span><span class="o">.</span><span class="n">values</span> 
 <span class="n">min_max_scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">()</span>
 <span class="n">x_scaled</span> <span class="o">=</span> <span class="n">min_max_scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -14948,7 +14950,7 @@ cluster 7 = 1405
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Z-score (standarization) = x - mean(x) / std(x)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Z-score (standardization) = x - mean(x) / std(x)</span>
 
 <span class="n">df_numeric</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;price&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;duenos_promedio&quot;</span><span class="p">,</span><span class="s2">&quot;rating_neto&quot;</span><span class="p">,</span><span class="s2">&quot;rating_perc&quot;</span><span class="p">]]</span>
 <span class="n">df_numeric</span> <span class="o">=</span><span class="p">(</span><span class="n">df_numeric</span><span class="o">-</span><span class="n">df_numeric</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">/</span><span class="n">df_numeric</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
@@ -15213,7 +15215,7 @@ cluster 7 = 1405
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p>Primero que todo, podemos apreciar que al usar la normalización Z-score los datos con los valores más extremos (que como veremos a continuación parecen corresponder a los juegos más populares) se alejan considerablemente de la aglomeración de los datos comunes. Esto podría ser beneficioso para nuestro objetivo de caracterizar estos juegos.</p>
-<p>Lo segundo que podemos notar al usar Z-score es que al reducir las dimensiones del dataset usando los dos metodos antes vistos, obtenemos una distribución casi idéntica (si es que no idéntica). Esta consistencia es una buena señal para la exploración, así que seguiremos usándolo.</p>
+<p>Lo segundo que podemos notar al usar Z-score es que al reducir las dimensiones del dataset usando los dos métodos antes vistos, obtenemos una distribución casi idéntica (si es que no idéntica). Esta consistencia es una buena señal para la exploración, así que seguiremos usándolo.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -15264,8 +15266,8 @@ cluster 10 = 5846
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Pareciera que el 3er cluster se compone de dos outliers groseros, pero no es el caso. El problema es que se trata de los juegos <code>Counter-Strike: Global Offensive</code> y <code>Dota 2</code>, los cuales son precisamente los juego más populares de la plataforma.</p>
-<p>Ahora, no podemos elminar estos datos, ya que para encontrar un modelo que represente los juegos más exitosos deberíamos llegar a clusters que agrupe a los juego más populares considerando la posición de estos.</p>
+<p>Pareciera que el 3er cluster se compone de dos outliers groseros, pero no es el caso. El problema es que se trata de los juegos <code>Counter-Strike: Global Offensive</code> y <code>Dota 2</code>, los cuales son precisamente los juegos más populares de la plataforma.</p>
+<p>Ahora, no podemos elminar estos datos, ya que para encontrar un modelo que represente los juegos más exitosos deberíamos llegar a clusters que agrupen a los juegos más populares considerando la posición de estos.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -15404,7 +15406,7 @@ cluster 10 = 5846
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Aunque, si observamos los juegos del 5to y 9no cluster, podemos observar que generamos tres clusters de interés constituidos por varios juegos que de antemano sabemos que pueden ser considerados populares o exitosos. Esto puede significar que vamos por buen camino, quizas <strong>una buena estrategia sería dividir el dataset en varios clusters y luego ir reagrupando los que no correspondan a los juegos más exitosos</strong> para tener un mejor criterio de evaluación de los datos que pueda ser usado en el futuro.</p>
+<p>Aunque, si observamos los juegos del 5to y 9no cluster, podemos observar que generamos tres clusters de interés constituidos por varios juegos que de antemano sabemos que pueden ser considerados populares o exitosos. Esto puede significar que vamos por buen camino, quizás <strong>una buena estrategia sería dividir el dataset en varios clusters y luego ir reagrupando los que no correspondan a los juegos más exitosos</strong> para tener un mejor criterio de evaluación de los datos que pueda ser usado en el futuro.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -15555,7 +15557,7 @@ Name: name, dtype: object</pre>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Experimento-3:-(--A&#209;OS),(multiples-clusters-+-aglomeraci&#243;n-de-comunes)">Experimento 3: (- A&#209;OS),(multiples clusters + aglomeraci&#243;n de comunes)<a class="anchor-link" href="#Experimento-3:-(--A&#209;OS),(multiples-clusters-+-aglomeraci&#243;n-de-comunes)">&#182;</a></h3><p>Para este experimento ya no consideramos el año de salida de los juegos, ya que si el objetivo del clustering es obtener agrupaciones para luego ser usadas en un modelo de clasificación predictivo, no tiene sentido pensar en el año de salida de juegos anteriores como alternativa para los proximos lanzamientos.</p>
+<h3 id="Experimento-3:-(--A&#209;OS),(m&#250;ltiples-clusters-+-aglomeraci&#243;n-de-comunes)">Experimento 3: (- A&#209;OS),(m&#250;ltiples clusters + aglomeraci&#243;n de comunes)<a class="anchor-link" href="#Experimento-3:-(--A&#209;OS),(m&#250;ltiples-clusters-+-aglomeraci&#243;n-de-comunes)">&#182;</a></h3><p>Para este experimento ya no consideramos el año de salida de los juegos, ya que si el objetivo del clustering es obtener agrupaciones para luego ser usadas en un modelo de clasificación predictivo, no tiene sentido pensar en el año de salida de juegos anteriores como alternativa para los proximos lanzamientos.</p>
 <p>Incluiremos la variable usuarios promedio a pesar de su alta correlación con el rating neto. Esto es para evitar problemas ciertos problemas de clustering, ya que de lo contrario se pueden considerar juegos con pocos usuarios como similares a los más populares basado en su porcentaje de ratings positivos y su precio, en especial si son Free-2-Play.</p>
 <p>Nuestro objetivo con este experimento es aplicar la estrategia planteada en la parte anterior.</p>
 
@@ -15572,7 +15574,7 @@ Name: name, dtype: object</pre>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[43]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Z-score (standarization) = x - mean(x) / std(x)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Z-score (standardization) = x - mean(x) / std(x)</span>
 
 <span class="n">df_numeric</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;price&quot;</span><span class="p">,</span><span class="s2">&quot;duenos_promedio&quot;</span><span class="p">,</span><span class="s2">&quot;rating_neto&quot;</span><span class="p">,</span><span class="s2">&quot;rating_perc&quot;</span><span class="p">]]</span>
 <span class="n">df_numeric</span> <span class="o">=</span><span class="p">(</span><span class="n">df_numeric</span><span class="o">-</span><span class="n">df_numeric</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">/</span><span class="n">df_numeric</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
@@ -16525,7 +16527,7 @@ Name: name, dtype: object</pre>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Experimento-4:-(DBSCAN)">Experimento 4: (DBSCAN)<a class="anchor-link" href="#Experimento-4:-(DBSCAN)">&#182;</a></h3><p>Usaremos el método de clustering DBSCAN en esta ocasión, aunque no esperamos resultados muy positivos ya que ahora no podemos manipular directamente la cantidad de clusters que obtendremos y tendremos problemas al aplicar nuestra estrategia. Pero aun así, vale la intentarlo.</p>
+<h3 id="Experimento-4:-(DBSCAN)">Experimento 4: (DBSCAN)<a class="anchor-link" href="#Experimento-4:-(DBSCAN)">&#182;</a></h3><p>Usaremos el método de clustering DBSCAN en esta ocasión, aunque no esperamos resultados muy positivos ya que ahora no podemos manipular directamente la cantidad de clusters que obtendremos y tendremos problemas al aplicar nuestra estrategia. Pero aun así, vale la pena intentarlo.</p>
 
 </div>
 </div>
@@ -16540,7 +16542,7 @@ Name: name, dtype: object</pre>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[32]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Z-score (standarization) = x - mean(x) / std(x)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Z-score (standardization) = x - mean(x) / std(x)</span>
 
 <span class="n">df_numeric</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;price&quot;</span><span class="p">,</span><span class="s2">&quot;duenos_promedio&quot;</span><span class="p">,</span><span class="s2">&quot;rating_neto&quot;</span><span class="p">,</span><span class="s2">&quot;rating_perc&quot;</span><span class="p">]]</span>
 <span class="n">df_numeric</span> <span class="o">=</span><span class="p">(</span><span class="n">df_numeric</span><span class="o">-</span><span class="n">df_numeric</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">/</span><span class="n">df_numeric</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
@@ -17237,14 +17239,14 @@ Name: name, dtype: object</pre>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>DBSCANS claramente no es un método de clustering que nos sirva para nuestra exploración, ya que la mayoría de los datos en el dataset original son poco relevantes y se encuentran aglomerados, generando un cluster dominante. Esto en si no es mucho problema, es más, uno pensaría que equivale al paso en nuestra estrategia de juntar los clusters poco relevantes, sin embargo esto implica que una gran cantidad de los datos de juegos más relevantes (como CS:GO y Dota 2) son catalogados como ruido (Noise Points).</p>
-<p>Esto es culpa de la naturaleza del algoritmo mismo. Si observamos el gráfico en la parte <strong>2.</strong> de este experimento, lo que sucede es que los datos a la derecha del punto de inflexión corresponden a los juegos de interés, aquellos que componen las <em>tiers</em> más altas del experimento anterior. Por esto, este algoritmo no nos resultó útil para empezar la exploración del dataset.</p>
+<p>DBSCANS claramente no es un método de clustering que nos sirva para nuestra exploración, ya que la mayoría de los datos en el dataset original son poco relevantes y se encuentran aglomerados, generando un cluster dominante. Esto en sí no es mucho problema, es más, uno pensaría que equivale al paso en nuestra estrategia de juntar los clusters poco relevantes, sin embargo esto implica que una gran cantidad de los datos de juegos más relevantes (como CS:GO y Dota 2) son catalogados como ruido (Noise Points) ya que se encuentran a una gran distancia entre ellos en comparación a los datos del aglomerado.</p>
+<p>Esto es culpa de la naturaleza del algoritmo mismo. Si observamos el gráfico en la parte <strong>2.</strong> de este experimento, lo que sucede es que los datos a la derecha del punto de inflexión corresponden a los juegos de interés, aquellos que componen las <em>tiers</em> más altas del experimento anterior. Por esto, este algoritmo no nos resultó útil para obtener agrupaciones definidas y significativas de los datos del dataset.</p>
 
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Resultados-preeliminares">Resultados preeliminares<a class="anchor-link" href="#Resultados-preeliminares">&#182;</a></h2><p>Pudimos llegar en el experimento 3 a una división del dataset en clusters de interes, básicamente separando a los juegos más exitosos en un sistema de <em>tiers</em> ordenadas de acuerdo a la popularidad de los juegos con cierta precisón.</p>
+<h2 id="Resultados-preeliminares">Resultados preeliminares<a class="anchor-link" href="#Resultados-preeliminares">&#182;</a></h2><p>Pudimos llegar en el experimento 3 a una división del dataset en clusters de interés, básicamente separando a los juegos más exitosos en un sistema de <em>tiers</em> ordenadas de acuerdo a la popularidad de los juegos con cierta precisión.</p>
 <p>Para evaluar este clustering nos basamos exclusivamente en nuestros conocimientos previos sobre los juegos en vez de usar métodos numéricos, porque lo que buscamos principalmente es categorizar los juegos más populares para observar sus atributos no-numéricos y atribuirle a los datos una variable <em>target</em> para generar una clasificación predictiva.</p>
 
 </div>
@@ -17609,8 +17611,8 @@ Name: name, dtype: object</pre>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Por ejemplo, podemos observar los distintos géneros de videojuegos y su frecuenicia entre los juegos más populares. También se pueden comparar estos resultados con el dataset completo y con la evolución de estos generos en el tiempo.</p>
-<p>Además, se pueden analizar los datos más comunes para <em>"developer"</em> y <em>"publisher"</em> y comparar estos valores con el resto del dataset completo para ver si ciertos desarrolladores obtienen exito consistentemente con sus juegos.</p>
+<p>Por ejemplo, podemos observar los distintos géneros de videojuegos y su frecuenicia entre los juegos más populares. También se pueden comparar estos resultados con el dataset completo y con la evolución de estos géneros en el tiempo.</p>
+<p>Además, se pueden analizar los datos más comunes para <em>"developer"</em> y <em>"publisher"</em> y comparar estos valores con el resto del dataset completo para ver si ciertos desarrolladores obtienen éxito consistentemente con sus juegos.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">

@@ -21,7 +21,7 @@ text-align: justify}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 ## Integrantes
-- Sofía Castro
+- Sofía Castro (elimina)
 - Luis Jiménez
 - Germán Matamoro
 - Nicolás Olivero
@@ -469,15 +469,15 @@ Por lo que podría ser prudente aplicar filtros o transformaciones adecuadas al 
 
 ## Mejorar Hito 1
 
-Como se mencionó en la parte, se realizaron cambios explícitos en la parte de la exploración de los datos con el fin de optimizar la presentación del reporte. En esta parte redefiniremos las preguntas planteadas y aplicaremos alteraciones una vez más al dataset para que, teniendo en cuenta nuestros conocimientos recientemente adquiridos sobre minería de datos, sea posible llegar a resultados más tangibles. 
+Como se mencionó en la parte 2, se realizaron cambios explícitos en la parte de la exploración de los datos con el fin de optimizar la presentación del reporte. En esta parte redefiniremos las preguntas planteadas y aplicaremos alteraciones una vez más al dataset para que, teniendo en cuenta nuestros conocimientos recientemente adquiridos sobre minería de datos, sea posible llegar a resultados más tangibles. 
 
 ### Replanteamiento de las preguntas
 
-Como se mencionó anteriormente, se redujo el análisis exploratorio para mostrar unicamente información relevante y mejor presentada. También replantearemos nuestras interrogantes:
+Como se mencionó anteriormente, se redujo el análisis exploratorio para mostrar unicamente información relevante y mejor presentada. También se replantearán nuestras interrogantes:
 
 1. ¿Cómo abordar problemas con los datos originales?
 
-Es necesario re-procesar el grupo de datos para que sea útil no solo al observar sus atributos, también para poder contestar las preguntas que plantearemos y llegar a conclusiones satisfactorias.
+Es necesario re-procesar el grupo de datos para que sea útil no solo al observar sus atributos, sino también para poder contestar las preguntas que se plantean y llegar a conclusiones satisfactorias.
 
 2. ¿Cómo ha evolucionado la cantidad de juegos que lanzan los desarrolladores en el tiempo?
 
@@ -485,27 +485,27 @@ La exploración actual muestra un punto de partida para analizar este problema. 
 
 3. ¿Qué factores determinar que un juego es exitoso y/o popular entre los jugadores?
 
-4. ¿Cómo podemos predecir si un juego va a ser exitoso?
+4. ¿Cómo se puede predecir si un juego va a ser exitoso?
 
 Tareas como medir el éxito de un juego y determinar a priori si un juego será o no exitoso podrían ser respondidas al utilizar herramientas de clustering/clasificación.
 
 ### Re-procesamiento del dataset
 
-Primero podemos eliminar directamente los atributos que no nos serviran más. 
+Primero se pueden eliminar directamente los atributos que no nos serviran más. 
 
 [ **english** ; **required_age** ; **steamspy_tags** ; **achievements** ]
 
-Eliminaremos todas las columnas referentes a la fecha de salida de un juego, excepto **year**.
+Se eliminarán todas las columnas referentes a la fecha de salida de un juego, excepto **year**.
 
-Eliminaremos las filas con los 10 valores más altos para la variable **price**, pues luego de inspeccionarlos podemos deducir con confianza que se trata de outliers y que estorbarán al momento de explorar en mayor profundidad los datos.
+Se eliminarán las filas con los 10 valores más altos para la variable **price**, pues luego de inspeccionarlos se puede deducir con confianza que se trata de outliers y que estorbarán al momento de explorar en mayor profundidad los datos.
 
-Eliminaremos las columnas **positive_ratings** y **negative_ratings** para quedarnos solo con **rating_neto** y **rating_perc**, asi tenemos la misma información pero de otra manera que podría ser más útil.
+Se eliminarán las columnas **positive_ratings** y **negative_ratings** para que quede solo **rating_neto** y **rating_perc**, asi se tendría la misma información pero de otra manera que podría ser más útil.
 
-Luego; eliminaremos **Plataforms** por poseer una unica clase dominante, eliminaremos **categories** ya que se trata más de un aspecto técnico de cada software que no nos dice mucho, y eliminaremos cada variable dummy derivada de éstas. Además eliminaremos los atributos de playtime, por demostrar ser poco fiables.
+Luego; se eliminará **Plataforms** por poseer una única clase dominante, se eliminará **categories** ya que se trata más de un aspecto técnico de cada software que no nos dice mucho, y se eliminará cada variable dummy derivada de éstas. Además se eliminarán los atributos de playtime, por demostrar ser poco fiables.
 
-Por último, para **genres** eliminamos todas las variables dummy correspondientes a generos con menos frecuencia que **Utilities** (incluyendolo), ya que presentan muy pocas entradas y tampoco nos interesan software de utilidad que no son juegos.
+Por último, para **genres** se eliminarán todas las variables dummy correspondientes a géneros con menos frecuencia que **Utilities** (incluyéndolo), ya que presentan muy pocas entradas y tampoco son de interés software de utilidad que no son juegos.
 
-Está de más decir que también eliminaremos las columnas que fueron usadas como paso intermedio para arreglar el dataset, pues no fueron hechas para ser tomadas en cuenta.
+Está de más decir que también se eliminarán las columnas que fueron usadas como paso intermedio para arreglar el dataset, pues no fueron hechas para ser tomadas en cuenta.
 
 ```{r}
 steam_nuevo <- steam %>%
@@ -535,18 +535,18 @@ Variables dummy para cada género de videojuego:
 ```{r, echo=FALSE}
 # Variables dummy para cada genero
 steam_nuevo %>%
-  select(c(10:24)) %>%
+  select(c(10:25)) %>%
   colnames(.)
 ```
 ```{r, eval=FALSE, echo=FALSE}
 steam_nuevo <- read.csv("data/steam_ready2.csv", encoding = "UTF-8", as.is = F)
 ```
 
-Antes de continuar observemos la matriz de correlación entre las variables numéricas. Podemos observar que la relación entre los nuevos atributos es más débil que antes. Esto parece algo malo, pero en verdad solo nos dice que cada variable aporta información de manera diferente a las demás.
+Antes de continuar, se muestra la matriz de correlación entre las variables numéricas. Se puede observar que la relación entre los nuevos atributos es más débil que antes. Esto parece algo malo, pero en verdad solo indica que cada variable aporta información de manera diferente a las demás.
 
 ```{r, echo=FALSE}
 steam_nuevo %>%
-  select(6:10) %>%
+  select(5:9) %>%
   cor() %>%
   corrplot()
 ```
@@ -555,19 +555,19 @@ steam_nuevo %>%
 
 La tercera pregunta va enfocada a determinar las variables que determinan si un juego es exitoso, y la cuarta pregunta apunta a usar esta información para encontrar un algoritmo de clasificación predictivo.
 
-En este punto no tenemos algo como clases predefinidas para nuestro subconjunto de datos, pero sí tenemos una noción de cuales juegos son los más populares. Podemos aplicar un algoritmo de clustering sobre el dataset para obtener agrupaciones que reflejen apropiadamente el éxito de los juegos que las componen, pero tendríamos que porbar con diferentes parámetros o incluso modificarlos aún más.
+En este punto no se tiene algo como clases predefinidas para el subconjunto de datos, pero sí se tiene una noción de cuales juegos son los más populares. Se puede aplicar un algoritmo de clustering sobre el dataset para obtener agrupaciones que reflejen apropiadamente el éxito de los juegos que las componen, pero se tendría que probar con diferentes parámetros o incluso modificarlos aún más.
 
-Para todo esto usaremos diversas librerias de python enfocadas a minería de datos, y lo podemos hacer sin movernos de R gracias a la librería RETICULATE:
+Para todo esto se usarán diversas librerías de python enfocadas a minería de datos, y se puede hacer sin movernos de R gracias a la librería RETICULATE:
 
-**Nota:** Esto no funcionó y al final se trabajó con pandas en python3 (jupyter notebook).
+**Nota:** Esto no funcionó y al final se trabajó con la librería "pandas" en python3 (jupyter notebook).
 
 ### Aplicar métodos de análisis al dataset
 
 El análisis exploratorio y resultados preliminares del dataset se encuentra en [este link](https://htmlpreview.github.io/?https://github.com/SoraSpace769/CC5206_steam_games/blob/GMatamoro/Hito%202%20Aplicacion.html), disculpe las molestias.
 
 # Participación del equipo de trabajo
-- Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto.
-- Luis Jiménez: Autor del [repositorio](https://github.com/SoraSpace769/CC5206_steam_games) del proyecto en GitHub. Revisión general del reporte para orden lógico. Redacción de la sección 3 y análisis de gráficos de la sección 2.
-- Germán Matamoro: Revisión parcial y final del reporte y preparación de presentación. Revisión deatallada de gráficos de la sección 2.
-- Nicolás Olivero: Exploración del dataset y análisis de resultados de la sección 2. Colaboración en repositorio de GitHub del proyecto.
-- Alexander Walmsley: Etiquetado de gráfico y ordenamiento de bloques de código del reporte Rmd.
+- Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto. Luego eliminó el ramo.
+- Luis Jiménez: Autor del [repositorio](https://github.com/SoraSpace769/CC5206_steam_games) del proyecto en GitHub. Revisión general del reporte para orden lógico. Redacción de la sección 3 y análisis de gráficos de la sección 2. Asistencia en redacción de la sección 4. Redacción de la presentación.
+- Germán Matamoro: Revisión parcial y final del reporte y preparación de presentación. Revisión deatallada de gráficos de la sección 2. Redacción general de la sección 4. Asistencia en redacción de la presentación.
+- Nicolás Olivero: Exploración del dataset y análisis de resultados de la sección 2. Colaboración en repositorio de GitHub del proyecto. Asistencia en redacción de la sección 4. Redacción de la presentación.
+- Alexander Walmsley: Etiquetado de gráfico y ordenamiento de bloques de código del reporte Rmd. Asistencia en redacción de la sección 4. Redacción de la presentación.
