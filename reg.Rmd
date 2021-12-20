@@ -1,0 +1,127 @@
+---
+title: "reg"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regresiones
+
+```{r}
+options(scipen = 100)
+df <- read.csv("data/steam_ready2.csv")
+head(df)
+```
+
+
+```{r}
+summary(lm(df$price ~ df$duenos_promedio + df$rating_neto))
+```
+
+```{r}
+summary(lm(df$duenos_promedio ~ df$price + df$rating_neto))
+```
+
+```{r}
+summary(lm(df$duenos_promedio ~ df$price + df$rating_neto + df$Indie + df$Action + df$Casual + df$RPG + df$Massively.Multiplayer + df$Free.to.Play))
+```
+
+```{r}
+df$lnprice <- ifelse(df$price != 0,log(df$price),df$price)
+summary(lm(df$duenos_promedio ~ df$lnprice + df$rating_neto + df$Indie + df$Action + df$Casual + df$Massively.Multiplayer + df$Free.to.Play))
+```
+
+```{r}
+if (!require('tidyverse')) install.packages('tidyverse'); library('tidyverse')
+if (!require('splitstackshape')) install.packages('splitstackshape'); library('splitstackshape')
+  
+steam <- read.csv("data/steam.csv", encoding = "UTF-8", as.is = F)
+
+platforms <- str_split(steam$platforms, ";")
+categories <- str_split(steam$categories, ";")
+genres <- str_split(steam$genres, ";")
+
+platforms <- unlist(platforms)
+categories <- unlist(categories)
+genres <- unlist(genres)
+
+platforms <- unique(platforms)
+categories <- unique(categories)
+genres <- unique(genres)
+
+steam <- cSplit(steam, "platforms", sep=";")
+steam <- cSplit(steam, "categories", sep=";")
+steam <- cSplit(steam, "genres", sep=";")
+
+for (i in platforms){
+  steam <- steam %>%
+    mutate(!!i := if_any(starts_with("platforms"), ~ ifelse(.x == i,1,0))) 
+}
+
+for (i in categories){
+  steam <- steam %>%
+    mutate(!!i := if_any(starts_with("categories"), ~ ifelse(.x == i,1,0))) 
+}
+
+for (i in genres){
+  steam <- steam %>%
+    mutate(!!i := if_any(starts_with("genres"), ~ ifelse(.x == i,1,0))) 
+}
+
+GBP_TO_CLP_RATE <- 1085
+steam$price <- round(steam$price * GBP_TO_CLP_RATE)
+
+steam <- steam %>%
+  mutate_at(c(53:113), ~ifelse(is.na(.x)==T | .x ==F,0,1))
+
+owners <- str_split(steam$owners, "-")
+owners <- unlist(owners)
+owners <- unique(owners)
+steam <- cSplit(steam, "owners", sep="-")
+
+steam <- steam %>%
+  mutate(duenos_promedio = (owners_1 + owners_2)/2)
+
+steam$rating_neto <- steam$positive_ratings - steam$negative_ratings
+```
+
+```{r}
+steam$owners <- as.character(steam$owners)
+prop.table(table(steam$owners))
+
+steam <- steam %>%
+  mutate(dummy_duenos = ifelse(owners=='0-20000',0,1))
+
+prop.table(table(steam$dummy_duenos))
+```
+
+```{r, include=F}
+#steam$rating_neto <- steam$positive_ratings - steam$negative_ratings
+#summary(glm(steam$dummy_duenos ~ steam$price + steam$rating_neto, family = 'binomial'))
+```
+
+
+```{r}
+summary(lm(steam$duenos_promedio ~ steam$price + steam$rating_neto))
+```
+
+```{r}
+summary(lm(steam$duenos_promedio ~ steam$price + steam$positive_ratings))
+```
+
+```{r}
+summary(lm(steam$duenos_promedio ~ steam$price + steam$positive_ratings + steam$Indie + steam$Action + steam$Casual + steam$`Massively Multiplayer` + steam$`Free to Play`))
+```
+
+```{r}
+summary(lm(steam$duenos_promedio ~ steam$price + steam$positive_ratings + steam$Indie + steam$Action + steam$Casual + steam$`Massively Multiplayer` + steam$`Free to Play` + steam$negative_ratings))
+```
+
+
+
+
+
+
+
