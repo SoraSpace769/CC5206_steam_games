@@ -561,9 +561,63 @@ Para todo esto se usarán diversas librerías de python enfocadas a minería de 
 
 **Nota:** Esto no funcionó y al final se trabajó con la librería "pandas" en python3 (jupyter notebook).
 
-### Aplicar métodos de análisis al dataset
+## Aplicar métodos de análisis al dataset
 
-El análisis exploratorio y resultados preliminares del dataset se encuentra en [este link](https://htmlpreview.github.io/?https://github.com/SoraSpace769/CC5206_steam_games/blob/GMatamoro/Hito%202%20Aplicacion.html), disculpe las molestias.
+El análisis exploratorio y resultados preliminares del dataset se encuentra en [este link](https://htmlpreview.github.io/?https://github.com/SoraSpace769/CC5206_steam_games/blob/GMatamoro/ReporteAplicacion.html), disculpe las molestias.
+
+# Resultados y conclusiones
+
+Durante este proyecto nuestro objetivo principal era descubrir qué factores determinan el éxito de un videojuego y si podemos predecirlo. Para esto primero observamos los datos de manera descriptiva, los limpiamos y reprocesamos para aplicar técnicas de minería de datos aprendidas en este ramo.
+
+## Clustering:
+
+Para empezar, a priori entendimos como proxy de éxito la cantidad de dueños de un juego, aparte de nuestro conocimiento externo de la industria. Sumado a lo anterior, mediante técnicas de clustering produjimos una variable que estima el éxito de los juegos del dataset que se ajusta lo suficiente a nuestras hipótesis. Con esto, procedimos a analizar los datos en torno a la variable `dueños_promedio` y la nueva variable `Target`.
+
+Para el hito 3, usamos tres técnicas de minería de datos; Clasificación (mediante Random Forests), Regresión Lineal (mediante minimos cuadrados ordinarios) y Reglas de asociación (simulando la implicancia género -> éxito). Para la clasificación y Asociación se utilizó la variable `Target` y para la Regresión se utilizó la variable `Dueños_Promedio`.
+
+## Clasificación: 
+
+El objetivo aquí no era obtener un modelo de clasificación de los datos, pues las clases (variable `Target`) eran increíblemente desbalanceadas. El objetivo aquí era corroborar que la división del dataset entre juegos exitosos y no exitosos fuese apropiadamente determinística más allá de un análisis superficial. 
+
+Para esto utilizamos el método Random Forests, el cual tiene la cualidad de determinar qué tan importante fueron las variables al momento de generar el modelo de clasificación. Realizamos varios experimentos con distintas variables y configuraciones, y el mejor resultado obtenido fue al hacer subsampling sobre la clase no exitosa y compararlo con una única clase exitosa. 
+
+Obtuvimos que, como se esperaba, la variable `dueños_promedio` resultó ser la más significativa.
+
+## Regresión:
+
+Respecto al análisis de regresión se ajustaron variados modelos para entender cuáles son las variables que explican que un juego sea exitoso (medido en dueños promedio como variable dependiente). 
+
+El mejor modelo evaluado logró un R cuadrado ajustado de 56% con variables independientes como dummies de género, ratings positivos y negativos, etc. La única variable que no fue significativa fue precio y se obtuvieron coeficientes positivos en géneros como acción, multiplayer masivo, ratings positivos, ratings negativos, entre otros. Algo interesante es que tanto los ratings positivos como negativos afectan positivamente a la cantidad de dueños. 
+
+Por otro lado, las variables de género indie y casual tienen una relación negativa respecto a la cantidad de dueños. Resultado esperable ya que a pesar que existen muchos juegos indie y casuales, su base de jugadores es pequeña en los juegos específicos. 
+
+Por último, mediante este análisis se pudo concluir que el género free to play es la variable que más impacto positivo tiene sobre la cantidad de dueños. Resultado también esperable debido al acceso sin costos que tienen los usuarios de estos juegos.
+
+## Asociación:
+
+Aquí simplemente simulamos reglas de asociación del estilo [género -> éxito] para cada género por separado, ya que si aplicábamos un algoritmo de generación eficiente de reglas de asociación obtendríamos muchas del tipo [genero1 -> genero2], las cuales no nos interesan.
+
+Entonces revisamos distintas métricas de interés para cada género, obteniendo resultados estadísticos básicos de los datos. Pero lo más importante son los resultados obtenidos en los parámetros Confidence y Lift, la primera representa el porcentaje de juegos dentro de cada género que son exitosos y la segunda indica la correlación entre un género y el éxito de un juego.
+
+Obtuvimos que los géneros "Massively Multiplayer" y "Free 2 Play" se desempeñaron mejor en estas métricas, seguidos de "Action" y "RPG". Esto significa que dentro de los juegos MMO y F2P, hay una taza de éxito relativamente importante y se puede deber a que estos tipos de juego por lo general convocan una alta cantidad de jugadores dedicados y por lo que reciben una alta cantidad de reviews (otra variable importante para determinar el éxito de un juego). Por lo tanto, como estos géneros poseen una alta correlación con la variable target binaria, podemos decir que son los más exitosos.
+
+Por otro lado, observamos ciertos géneros no alcanzaron buenas cifras:
+
+Los géneros "Gore" y "Violent", muy probablemente debido a que por lo general no apelan a un público muy amplio.
+
+El género "Indie", que a pesar de constituir la mayoría de los datos (72.15%), una cantidad muy pequeña de éstos logra ser exitoso (0.6%), probablemente debido al poco apoyo con el que cuenta un estudio pequeño y la baja exposición al público que usualmente alcanzan.
+
+El género "Early Access", pues son juegos que aún no son lanzados y que recién están en fases beta es normal que no sean populares.
+
+Por último, el género "Casual" es el que tiene la correlación negativa más alta con el parámetro del éxito. Esto se puede deber a que estos juegos no son los que la gente recomienda muy seguido, además el público de la plataforma Steam es de jugadores más dedicados, pero esto es especulación.
+
+## Conclusiones finales   
+
+Desde la exploración inicial de los datos tuvimos ciertos problemas con el dataset, en particular ciertas variables redundantes, inconsistentes, poco significativas o poco fiables. Muchos de estos se pueden atribuir a la aplicación externa desde la cual se obtuvieron los datos (SteamSpy).
+
+Aun asi, mediante limpieza de datos y distintos técnicas de minería de datos pudimos cumplir en cierta medida nuestros objetivos; entender el éxito de los juegos de la plataforma Steam. Desde las variables que lo determinan hasta los géneros más exitosos. 
+
+Para ampliar o mejorar esta investigación se pueden considerar otras bases de datos como IGN o Metacritic (para incluir calificaciones/reviews más significativas) o de otras plataformas como EpicStore o de consolas.
 
 # Participación del equipo de trabajo
 - Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto. Luego eliminó el ramo.

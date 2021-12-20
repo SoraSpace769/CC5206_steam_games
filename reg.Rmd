@@ -97,6 +97,11 @@ steam <- steam %>%
 prop.table(table(steam$dummy_duenos))
 ```
 
+```{r}
+steam <- steam %>%
+  select(duenos_promedio,price, positive_ratings,Indie,Action,Casual,`Massively Multiplayer`,`Free to Play`,negative_ratings)
+```
+
 ```{r, include=F}
 #steam$rating_neto <- steam$positive_ratings - steam$negative_ratings
 #summary(glm(steam$dummy_duenos ~ steam$price + steam$rating_neto, family = 'binomial'))
@@ -119,7 +124,9 @@ summary(lm(steam$duenos_promedio ~ steam$price + steam$positive_ratings + steam$
 summary(lm(steam$duenos_promedio ~ steam$price + steam$positive_ratings + steam$Indie + steam$Action + steam$Casual + steam$`Massively Multiplayer` + steam$`Free to Play` + steam$negative_ratings))
 ```
 
-
+```{r}
+write.csv(steam, "steam_reg.csv")
+```
 
 
 
