@@ -1,0 +1,25 @@
+---
+title: "hito 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+steam <- read.csv("data/steam_target.csv", encoding = "UTF-8", as.is = F)
+
+steam_target <- read.csv("data/steam_target.csv", encoding = "UTF-8", as.is = F)
+```
+
+```{r}
+library('tidyverse')
+library('splitstackshape')
+library('reshape')
+
+steam_target %>%
+  filter(Target>0) %>%
+  summary()
+  
+```
