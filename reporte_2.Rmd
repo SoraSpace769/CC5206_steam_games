@@ -1,5 +1,5 @@
 ---
-title: "Reporte Hito 2 Minería de Datos, Grupo 3"
+title: "Reporte Hito 3 Minería de Datos, Grupo 3"
 output:
   html_document: 
     number_sections: yes
@@ -571,7 +571,7 @@ Durante este proyecto nuestro objetivo principal era descubrir qué factores det
 
 ## Clustering:
 
-Para empezar, a priori entendimos como proxy de éxito la cantidad de dueños de un juego, aparte de nuestro conocimiento externo de la industria. Sumado a lo anterior, mediante técnicas de clustering produjimos una variable que estima el éxito de los juegos del dataset que se ajusta lo suficiente a nuestras hipótesis. Con esto, procedimos a analizar los datos en torno a la variable `dueños_promedio` y la nueva variable `Target`.
+Para empezar, a priori entendimos como proxy de éxito la cantidad de dueños de un juego, aparte de nuestro conocimiento externo de la industria. Sumado a lo anterior, mediante técnicas de clustering produjimos una variable que estima el éxito de los juegos del dataset que se ajusta lo suficiente a nuestras hipótesis, a esta variable la llamamos `Target`. Con esto, procedimos a analizar los datos en torno a las variables `dueños_promedio` y `Target`.
 
 Para el hito 3, usamos tres técnicas de minería de datos; Clasificación (mediante Random Forests), Regresión Lineal (mediante minimos cuadrados ordinarios) y Reglas de asociación (simulando la implicancia género -> éxito). Para la clasificación y Asociación se utilizó la variable `Target` y para la Regresión se utilizó la variable `Dueños_Promedio`.
 
@@ -621,7 +621,7 @@ Para ampliar o mejorar esta investigación se pueden considerar otras bases de d
 
 # Participación del equipo de trabajo
 - Sofía Castro: Generación y ordenamiento por partes del reporte Rmd. Separación de atributos con múltiples, como se muestra en la sección 2.2 y 2.3, y redacción de la introducción (sección 1). Colaboración en repositorio de GitHub del proyecto. Luego eliminó el ramo.
-- Luis Jiménez: Autor del [repositorio](https://github.com/SoraSpace769/CC5206_steam_games) del proyecto en GitHub. Revisión general del reporte para orden lógico. Redacción de la sección 3 y análisis de gráficos de la sección 2. Asistencia en redacción de la sección 4. Redacción de la presentación.
-- Germán Matamoro: Revisión parcial y final del reporte y preparación de presentación. Revisión deatallada de gráficos de la sección 2. Redacción general de la sección 4. Asistencia en redacción de la presentación.
-- Nicolás Olivero: Exploración del dataset y análisis de resultados de la sección 2. Colaboración en repositorio de GitHub del proyecto. Asistencia en redacción de la sección 4. Redacción de la presentación.
-- Alexander Walmsley: Etiquetado de gráfico y ordenamiento de bloques de código del reporte Rmd. Asistencia en redacción de la sección 4. Redacción de la presentación.
+- Luis Jiménez: Autor del [repositorio](https://github.com/SoraSpace769/CC5206_steam_games) del proyecto en GitHub. Revisión general del reporte para orden lógico. Redacción de la sección 3 y análisis de gráficos de la sección 2. Asistencia en redacción de la sección 4. Redacción de la presentación. Generación y análisis de regresiones.
+- Germán Matamoro: Revisión parcial y final del reporte y preparación de presentación. Desarrollo y redacción general de la sección de clustering y asociación. Revisión y grabación de la presentación.
+- Nicolás Olivero: Exploración del dataset y análisis de resultados de la sección 2. Colaboración en repositorio de GitHub del proyecto. Asistencia en redacción de la sección 4. Redacción de la presentación. Análisis de regresiones y apoyo en redacción de informe final.
+- Alexander Walmsley: Etiquetado de gráfico y ordenamiento de bloques de código del reporte Rmd. Desarrollo del clasificador de random forest (clasificación) y la determinación de features relevantes, redacción en la presentación e informe para las secciones en las que participó.
